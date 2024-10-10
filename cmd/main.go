@@ -18,14 +18,15 @@ func main() {
 
 	db := repos.NewBusinessDatabase(cfg, envs)
 
-	userRepo := repos.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
-	userController := controller.NewUserController(userService)
+	Repos := repos.NewRepository(db)
+	Service := service.NewService(Repos)
+	Controller := controller.NewController(Service)
 
-	router := userController.InitRouters()
+	router := Controller.InitRouters()
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("Fatal::", err)
 	}
+
 	return
 
 }

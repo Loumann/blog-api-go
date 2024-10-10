@@ -17,8 +17,10 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.Static("/static", "./static")
 
 	router.GET("/", c.LoginPage)
+	router.GET("/feed", c.OnPointWindowLocation)
+
 	router.GET("/users", c.GetUsers)
-	router.GET("feed", c.OnPointWindowLocation)
+	router.GET("/post", c.GetPost)
 
 	router.POST("/sig-in", c.SignIn)
 

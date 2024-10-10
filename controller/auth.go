@@ -2,27 +2,17 @@ package controller
 
 import (
 	"blog-api-go/models"
-	"blog-api-go/service"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
 
-type Controller struct {
-	userService service.UserService
-}
-
-func NewUserController(userService service.UserService) *Controller {
-	return &Controller{userService: userService}
-
-}
-
 func (c *Controller) GetUsers(context *gin.Context) {
 
-	users, err := c.userService.GetAllUsers()
+	users, err := c.Services.GetAllUsers()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Fatal("error getting users")
+		log.Fatal("error getting users", err.Error())
 	}
 	context.JSON(200, users)
 	context.AbortWithStatus(http.StatusOK)
@@ -37,7 +27,7 @@ func (c *Controller) SignIn(context *gin.Context) {
 		return
 	}
 
-	err := c.userService.SignIn(input.Login, input.Password)
+	err := c.Services.SignIn(input.Login, input.Password)
 
 	if err != nil {
 		log.Println("Error signing in:", err)

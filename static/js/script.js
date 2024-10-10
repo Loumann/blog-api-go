@@ -1,21 +1,5 @@
 console.log("js file download!")
 
-
-function SignIn(){
-
-     let xrh = new XMLHttpRequest()
-     xrh.open("GET", 'http://localhost:8080/users')
-     xrh.responseType = "json"
-
-     xrh.send()
-    xrh.onload = function (){
-         let responseJSON = xrh.response;
-         alert(responseJSON.message);
-         console.log(responseJSON.message, responseJSON)
-
-    }
-}
-
 function Sign_In() {
     let xhr = new XMLHttpRequest()
     log = document.getElementById("login")
@@ -45,7 +29,35 @@ function Sign_In() {
             document.getElementById("message").innerText = "Ошибка при входе";
         }
     }
-
-
     console.log(json)
 }
+
+
+const createPost = () => {
+    const post = document.createElement("div")
+    post.className = "post-on-title-box"
+    post.append(createPost("Коммент") )
+
+}
+
+
+ function loadPosts() {
+    fetch('/post', {
+        method: 'GET',
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Ошибка сети: ' + response.status); // Обрабатываем ошибки
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Данные получены:', data); //
+
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+}
+
+loadPosts()

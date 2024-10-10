@@ -5,27 +5,16 @@ import (
 	"blog-api-go/repos"
 )
 
-type UserService interface {
+type Service interface {
 	GetAllUsers() ([]models.User, error)
 	SignIn(login string, password string) error
-	FindAll() ([]models.User, error)
+	GetPosts() ([]models.Post, error)
 }
 
-func NewUserService(userRepo UserService) UserService {
-	return &userService{userRepo}
+func NewService(Repos *repos.RepositoryImpl) *Services {
+	return &Services{Repos}
 }
 
-type userService struct {
-	userRepository repos.UserRepository
-}
-
-func (s *userService) GetAllUsers() ([]models.User, error) {
-	return s.userRepository.GetAllUsers()
-}
-
-func (s *userService) SignIn(login string, password string) error {
-	return s.userRepository.SignIn(login, password) // Передаем логин и пароль
-}
-func (s *userService) FindAll() ([]models.User, error) {
-	return s.userRepository.FindAll()
+type Services struct {
+	Repository repos.Repository
 }
