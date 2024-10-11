@@ -9,3 +9,7 @@ type User struct {
 	BirthDate    string `json:"birthday_user" db:"birthday_user"`
 	Photo        string `json:"photo" db:"photo"`
 }
+
+type Credentials struct {
+	Password string `json:"password" db:"password"`
+}

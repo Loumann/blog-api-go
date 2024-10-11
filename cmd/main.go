@@ -26,7 +26,6 @@ func main() {
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("Fatal::", err)
 	}
-
 	return
 
 }

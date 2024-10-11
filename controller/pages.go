@@ -11,5 +11,8 @@ func (c *Controller) LoginPage(con *gin.Context) {
 
 func (c *Controller) OnPointWindowLocation(con *gin.Context) {
 	con.HTML(http.StatusOK, "BlogTemplate.html", nil)
+}
 
+func (c *Controller) SignUpPage(con *gin.Context) {
+	con.HTML(http.StatusOK, "Registration.html", nil)
 }

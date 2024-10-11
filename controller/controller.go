@@ -21,7 +21,6 @@ func (c *Controller) GetPost(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		log.Fatal("error getting posts", err.Error())
 	}
-
 	context.AbortWithStatusJSON(http.StatusOK, post)
 	return
 }

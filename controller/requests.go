@@ -18,11 +18,13 @@ func (c *Controller) InitRouters() *gin.Engine {
 
 	router.GET("/", c.LoginPage)
 	router.GET("/feed", c.OnPointWindowLocation)
+	router.GET("/registration", c.SignUpPage)
 
 	router.GET("/users", c.GetUsers)
 	router.GET("/post", c.GetPost)
 
 	router.POST("/sig-in", c.SignIn)
+	router.POST("/sig-up", c.SignUp)
 
 	return router
 }
