@@ -6,11 +6,12 @@ import (
 )
 
 type Repository interface {
-	SignIn(login string) ([]byte, error)
+	SignIn(login string) ([]byte, int, error)
 	SignUp(user models.User, hashPass models.Credentials) (err error)
 
 	GetAllUsers() ([]models.User, error)
 	GetPosts() ([]models.Post, error)
+	GetProfileUser(UserID int) ([]models.User, int, error)
 }
 
 func NewRepository(db *sqlx.DB) *RepositoryImpl {
@@ -21,7 +22,7 @@ type RepositoryImpl struct {
 	db *sqlx.DB
 }
 
-func (r *RepositoryImpl) FindAll() ([]models.User, error) {
+func (r RepositoryImpl) FindAll() ([]models.User, error) {
 	var users []models.User
 	rows, err := r.db.Query(`SELECT * FROM user`)
 	if err != nil {
@@ -38,7 +39,7 @@ func (r *RepositoryImpl) FindAll() ([]models.User, error) {
 	}
 	return users, nil
 }
-func (r *RepositoryImpl) GetAllUsers() ([]models.User, error) {
+func (r RepositoryImpl) GetAllUsers() ([]models.User, error) {
 	var users []models.User
 	rows, err := r.db.Query(`SELECT * FROM user_profiles`)
 	if err != nil {
@@ -54,7 +55,7 @@ func (r *RepositoryImpl) GetAllUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
-func (r *RepositoryImpl) GetPosts() ([]models.Post, error) {
+func (r RepositoryImpl) GetPosts() ([]models.Post, error) {
 	var posts []models.Post
 	rows, err := r.db.Query(`SELECT * FROM comments`)
 	if err != nil {
@@ -75,16 +76,18 @@ func (r *RepositoryImpl) GetPosts() ([]models.Post, error) {
 	return posts, err
 }
 
-func (r *RepositoryImpl) SignIn(login string) ([]byte, error) {
+func (r RepositoryImpl) SignIn(login string) ([]byte, int, error) {
 	var hashedPassword string
-	query := `SELECT password FROM user_profiles WHERE login = $1`
+	var userID int
 
-	err := r.db.Get(&hashedPassword, query, login)
+	query := `SELECT password, id FROM user_profiles WHERE login = $1`
+
+	err := r.db.QueryRow(query, login).Scan(&hashedPassword, &userID)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return []byte(hashedPassword), nil
+	return []byte(hashedPassword), userID, nil
 }
 func (r RepositoryImpl) SignUp(user models.User, hashPass models.Credentials) error {
 
@@ -95,4 +98,23 @@ func (r RepositoryImpl) SignUp(user models.User, hashPass models.Credentials) er
 		return err
 	}
 	return err
+}
+
+func (r RepositoryImpl) GetProfileUser(UserID int) ([]models.User, int, error) {
+	var users []models.User
+
+	rows, err := r.db.Query(`SELECT * FROM user_profiles WHERE id = $1`, UserID)
+	if err != nil {
+
+		return users, 0, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo); err != nil {
+			return users, 0, err
+		}
+		users = append(users, user)
+	}
+	return users, 0, nil
 }

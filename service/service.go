@@ -6,10 +6,12 @@ import (
 )
 
 type Service interface {
-	GetAllUsers() ([]models.User, error)
-	SignIn(login string) ([]byte, error)
-	GetPosts() ([]models.Post, error)
+	SignIn(login string) ([]byte, int, error)
 	SignUp(user models.User, hashPass models.Credentials) error
+
+	GetAllUsers() ([]models.User, error)
+	GetPosts() ([]models.Post, error)
+	GetProfileUser(UserID int) ([]models.User, int, error)
 }
 
 func NewService(Repos *repos.RepositoryImpl) *Services {

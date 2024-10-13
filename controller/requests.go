@@ -20,7 +20,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.GET("/feed", c.OnPointWindowLocation)
 	router.GET("/registration", c.SignUpPage)
 
-	router.GET("/users", c.GetUsers)
+	router.GET("/users", c.GetProfile)
 	router.GET("/post", c.GetPost)
 
 	router.POST("/sig-in", c.SignIn)
