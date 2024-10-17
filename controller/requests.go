@@ -21,7 +21,17 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.GET("/registration", c.SignUpPage)
 
 	router.GET("/users", c.GetProfile)
-	router.GET("/post", c.GetPost)
+
+	router.GET("/posts", c.GetPosts)
+
+	post := router.Group("/post")
+	{
+		post.POST("/create", c.CreatePost)
+		post.GET("/")
+	}
+
+	router.POST("/create-com", c.CreateComment)
+	router.GET("/comments", c.GetComments)
 
 	router.POST("/sig-in", c.SignIn)
 	router.POST("/sig-up", c.SignUp)

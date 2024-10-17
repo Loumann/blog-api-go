@@ -2,28 +2,14 @@ package controller
 
 import (
 	"blog-api-go/models"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"strconv"
-	"time"
 )
 
 var jwtSecret = []byte("my_secret_key")
 
-func (c Controller) GetUsers(context *gin.Context) {
-
-	users, err := c.Services.GetAllUsers()
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Fatal("error getting users", err.Error())
-	}
-	context.JSON(200, gin.H{"profile": users})
-	context.AbortWithStatus(http.StatusOK)
-}
 func (c Controller) SignUp(context *gin.Context) {
 
 	var input models.User
@@ -51,7 +37,6 @@ func (c Controller) SignUp(context *gin.Context) {
 	}
 
 }
-
 func (c Controller) SignIn(context *gin.Context) {
 	var input models.User
 	if err := context.ShouldBindJSON(&input); err != nil {
@@ -87,56 +72,24 @@ func (c Controller) SignIn(context *gin.Context) {
 	})
 }
 
-func (c Controller) GenerateJWT(userId int) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
+func (c Controller) GetUsers(context *gin.Context) {
 
-	claims := &models.Claims{
-		UserId: userId,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte("my_secret_key")) // Замените на ваш секретный ключ
+	users, err := c.Services.GetAllUsers()
 	if err != nil {
-		return "", err
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Fatal("error getting users", err.Error())
 	}
-
-	return tokenString, nil
+	context.JSON(200, gin.H{"profile": users})
+	context.AbortWithStatus(http.StatusOK)
 }
-
 func (c Controller) GetProfile(context *gin.Context) {
-	tokenString, err := context.Cookie("token")
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
-
-	// Парсинг токена и валидация
 	claims := &models.Claims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("my_secret_key"), nil // Ваш секретный ключ
-	})
-
-	if err != nil || !token.Valid {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
-	fmt.Printf(strconv.Itoa(claims.UserId))
-	// Проверка наличия userId в токене
-	if claims.UserId == 0 {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
-		return
-	}
-
-	// Получение профиля пользователя из базы данных
+	c.ParserJWT(context, claims)
 	user, _, err := c.Services.GetProfileUser(claims.UserId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	// Возвращаем профиль пользователя
 	context.JSON(http.StatusOK, gin.H{"profile": user})
 }
