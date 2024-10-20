@@ -2,21 +2,11 @@ package controller
 
 import (
 	"blog-api-go/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 )
-
-func (c *Controller) GetComments(context *gin.Context) {
-	post, err := c.Services.GetComments()
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		log.Fatal("error getting posts", err.Error())
-	}
-	context.AbortWithStatusJSON(http.StatusOK, post)
-	return
-}
 
 func (c *Controller) CreatePost(context *gin.Context) {
 	var Post models.Post
@@ -35,30 +25,6 @@ func (c *Controller) CreatePost(context *gin.Context) {
 	context.AbortWithStatusJSON(http.StatusOK, gin.H{"create new post": Post})
 }
 
-func (c *Controller) CreateComment(context *gin.Context) {
-	var input models.Comments
-	claims := &models.Claims{}
-
-	c.ParserJWT(context, claims)
-	if err := context.ShouldBindJSON(&input); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err})
-		fmt.Printf(err.Error())
-	}
-	postId, err := c.Services.GetIdPost(input.Id_post_on_comment)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		log.Fatal("error getting posts ", err.Error())
-	}
-
-	com, err := c.Services.CreateComment(claims.UserId, postId, input)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		log.Fatal("error getting comments", err.Error())
-	}
-	context.AbortWithStatusJSON(http.StatusOK, gin.H{"create new comment": com})
-
-}
-
 func (c Controller) GetPosts(context *gin.Context) {
 	posts, err := c.Services.GetPosts()
 	if err != nil {
@@ -67,4 +33,42 @@ func (c Controller) GetPosts(context *gin.Context) {
 	}
 	context.AbortWithStatusJSON(http.StatusOK, gin.H{"posts": posts})
 	return
+}
+
+func (c Controller) DeletePost(context *gin.Context) {
+	postIdParam := context.Param("postId")
+	postId, err := strconv.Atoi(postIdParam)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+		return
+	}
+
+	err = c.Services.DeletePost(postId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"status": "post deleted"})
+}
+
+func (c Controller) ChangePost(context *gin.Context) {
+	var post models.Post
+
+	err := context.ShouldBindJSON(&post)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err})
+	}
+
+	update, err := c.Services.ChangePost(post)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
+	}
+	if !update {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "post not exist"})
+
+	} else {
+		context.JSON(http.StatusOK, gin.H{"status": "post updated"})
+	}
+
 }

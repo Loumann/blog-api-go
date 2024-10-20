@@ -10,7 +10,6 @@ func (c *Controller) InitRouters() *gin.Engine {
 	authorization := router.Group("/sig-in")
 	{
 		authorization.GET("/sig-in")
-
 	}
 
 	router.LoadHTMLGlob("template/*")
@@ -22,16 +21,21 @@ func (c *Controller) InitRouters() *gin.Engine {
 
 	router.GET("/users", c.GetProfile)
 
-	router.GET("/posts", c.GetPosts)
-
 	post := router.Group("/post")
 	{
+		post.GET("/", c.GetPosts)
 		post.POST("/create", c.CreatePost)
-		post.GET("/")
+		post.DELETE("/delete/:postId", c.DeletePost)
+		post.PUT("/change", c.ChangePost)
 	}
 
-	router.POST("/create-com", c.CreateComment)
-	router.GET("/comments", c.GetComments)
+	comment := router.Group("/comment")
+	{
+		comment.POST("/create-com", c.CreateComment)
+		comment.GET("/", c.GetComments)
+		comment.DELETE("/delete/:commentId", c.DeleteComment)
+		comment.PUT("/change", c.ChangeComment)
+	}
 
 	router.POST("/sig-in", c.SignIn)
 	router.POST("/sig-up", c.SignUp)

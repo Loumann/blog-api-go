@@ -15,8 +15,14 @@ type Service interface {
 	GetProfileUser(UserID int) ([]models.User, int, error)
 	GetPosts() ([]models.Post, error)
 
+	DeletePost(postId int) error
+	DeleteComment(CommentId int) error
+
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
 	CreatePost(UserID int, post models.Post) error
+
+	ChangePost(post models.Post) (bool, error)
+	ChangeComment(comment models.Comments) (bool, error)
 }
 
 func NewService(Repos *repos.RepositoryImpl) *Services {

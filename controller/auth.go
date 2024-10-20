@@ -68,7 +68,6 @@ func (c Controller) SignIn(context *gin.Context) {
 	context.SetCookie("token", jwToken, 3600*24, "/", "localhost", true, true)
 	context.JSON(http.StatusOK, gin.H{
 		"message": "Logged in successfully",
-		"token":   jwToken,
 	})
 }
 
