@@ -1,6 +1,7 @@
-package controller
+package middleware
 
 import (
+	"blog-api-go/controller"
 	"blog-api-go/models"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-func (c Controller) GenerateJWT(userId int) (string, error) {
+func (c controller.Controller) GenerateJWT(userId int) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
 	claims := &models.Claims{
@@ -29,7 +30,7 @@ func (c Controller) GenerateJWT(userId int) (string, error) {
 	return tokenString, nil
 }
 
-func (c Controller) ParserJWT(context *gin.Context, claims *models.Claims) {
+func (c controller.Controller) ParserJWT(context *gin.Context, claims *models.Claims) {
 	tokenString, err := context.Cookie("token")
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})

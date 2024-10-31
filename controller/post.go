@@ -70,5 +70,10 @@ func (c Controller) ChangePost(context *gin.Context) {
 	} else {
 		context.JSON(http.StatusOK, gin.H{"status": "post updated"})
 	}
+}
+
+func (c Controller) ChechRools(context *gin.Context, userId int) {
+	claims := &models.Claims{}
+	c.ParserJWT(context, claims)
 
 }

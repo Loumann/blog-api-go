@@ -7,9 +7,10 @@ import (
 func (c *Controller) InitRouters() *gin.Engine {
 	router := gin.Default()
 
-	authorization := router.Group("/sig-in")
+	authorization := router.Group("/auth")
 	{
-		authorization.GET("/sig-in")
+		authorization.POST("/sign-in", c.SignIn)
+		authorization.POST("/sign-up", c.SignUp)
 	}
 
 	router.LoadHTMLGlob("template/*")
@@ -33,12 +34,12 @@ func (c *Controller) InitRouters() *gin.Engine {
 	{
 		comment.POST("/create-com", c.CreateComment)
 		comment.GET("/", c.GetComments)
-		comment.DELETE("/delete/:commentId", c.DeleteComment)
+		comment.DELETE("/:commentId", c.DeleteComment)
 		comment.PUT("/change", c.ChangeComment)
 	}
 
-	router.POST("/sig-in", c.SignIn)
-	router.POST("/sig-up", c.SignUp)
+	router.POST("/sign-in", c.SignIn)
+	router.POST("/sign-up", c.SignUp)
 
 	return router
 }

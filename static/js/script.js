@@ -14,19 +14,19 @@ function Sign_In() {
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     xhr.send(json);
 
+
     xhr.onload = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
 
-            if (response.success) {
-            } else {
-                document.getElementById("message").innerText =  "Неверный логин или пароль";
-                window.location.href = "/users";
-
+                if (response.success) {
+                } else {
+                    document.getElementById("message").innerText =  "Вы зашли";
+                    window.location.href = "/feed";
+                }
+            } else if (xhr.readyState === 4) {
+                document.getElementById("message").innerText = "Логин или пароль не существует";
             }
-        } else if (xhr.readyState === 4) {
-            document.getElementById("message").innerText = "Ошибка при входе";
-        }
     }
     console.log(json)
 }
@@ -43,7 +43,7 @@ function renderComments(comments) {
     comments.forEach(comment => {
         const commentDiv = document.createElement('div');
         commentDiv.classList.add('comment');
-        commentDiv.style.color = 'r'
+        commentDiv.style.color = 'red'; // Исправлено на 'red'
         commentDiv.innerHTML = `
             <p><strong>Пользователь ${comment.user_id}:</strong></p>
             <p>${comment.content}</p>
@@ -60,18 +60,19 @@ function loadPosts() {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Ошибка сети: ' + response.status); // Обрабатываем ошибки
+                throw new Error('Ошибка сети: ' + response.status);
             }
             return response.json();
         })
         .then(data => {
             console.log('Данные получены:', data);
-            renderComments(data); // Вызываем функцию для отображения комментариев
+            renderComments(data); // Используем функцию для рендеринга комментариев
         })
         .catch(error => {
             console.error('Ошибка:', error);
         });
 }
+
 
 function signup() {
 
@@ -122,5 +123,21 @@ function signup() {
             });
 
 }
+
+window.onload = function() {
+
+    const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='));
+
+    if (token) {
+        // Если токен найден, перенаправляем пользователя на страницу с профилем
+        window.location.href = '/feed';
+    } else {
+        // Если токена нет, остаемся на текущей странице (например, странице входа)
+        console.log("No token found. Please log in.");
+
+    }
+};
 
 loadPosts();

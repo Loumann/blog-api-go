@@ -97,7 +97,7 @@ func (r RepositoryImpl) GetIdPost(postId int) (int, error) {
 	err := r.db.QueryRow(`SELECT id_post FROM post WHERE id_post = $1`, postId).Scan(&idPost)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("пост с id %d не найден", postId)
+			return 0, fmt.Errorf("Пост с id %d не найден", postId)
 		}
 		return 0, err
 	}
