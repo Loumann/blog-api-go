@@ -26,13 +26,28 @@ func (c *Controller) CreatePost(context *gin.Context) {
 }
 
 func (c Controller) GetPosts(context *gin.Context) {
-	posts, err := c.Services.GetPosts()
+	page := context.DefaultQuery("page", "1")
+	limit := context.DefaultQuery("limit", "10")
+
+	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		log.Fatal("error getting posts", err.Error())
+		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid page parameter"})
+		return
 	}
-	context.AbortWithStatusJSON(http.StatusOK, gin.H{"posts": posts})
-	return
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit parameter"})
+		return
+	}
+
+	posts, err := c.Services.GetPosts(pageInt, limitInt)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Println("error getting posts", err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"posts": posts})
 }
 
 func (c Controller) DeletePost(context *gin.Context) {

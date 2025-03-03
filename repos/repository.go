@@ -12,11 +12,12 @@ type Repository interface {
 	SignIn(login string) ([]byte, int, error)
 	SignUp(user models.User, hashPass models.Credentials) (err error)
 
+	GetProfileUserForLogin(login string) (models.User, int, error)
 	GetAllUsers() ([]models.User, error)
-	GetProfileUser(UserID int) ([]models.User, int, error)
+	GetProfileUser(UserID int) (models.User, int, error)
 	GetComments() ([]models.Comments, error)
 	GetIdPost(PostId int) (int, error)
-	GetPosts() ([]models.Post, error)
+	GetPosts(page, limit int) ([]models.Post, error)
 
 	CreatePost(UserID int, post models.Post) error
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
@@ -54,24 +55,38 @@ func (r RepositoryImpl) GetAllUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
-func (r RepositoryImpl) GetProfileUser(UserID int) ([]models.User, int, error) {
-	var users []models.User
+func (r RepositoryImpl) GetProfileUser(UserID int) (models.User, int, error) {
+	var user models.User
 
-	rows, err := r.db.Query(`SELECT * FROM user_profiles WHERE id = $1`, UserID)
+	row := r.db.QueryRow(`SELECT id, login, email, password, full_name, photo FROM user_profiles WHERE id = $1`, UserID)
+
+	err := row.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo)
 	if err != nil {
-
-		return users, 0, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var user models.User
-		if err := rows.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo); err != nil {
-			return users, 0, err
+		if err == sql.ErrNoRows {
+			return user, 0, fmt.Errorf("пользователь с id %d не найден", UserID)
 		}
-		users = append(users, user)
+		return user, 0, err
 	}
-	return users, 0, nil
+
+	return user, 1, nil
 }
+
+func (r RepositoryImpl) GetProfileUserForLogin(login string) (models.User, int, error) {
+	var user models.User
+
+	row := r.db.QueryRow(`SELECT id, login, email, password, full_name, photo FROM user_profiles WHERE login = $1`, login)
+
+	err := row.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, 0, fmt.Errorf("пользователь с login %d не найден", login)
+		}
+		return user, 0, err
+	}
+
+	return user, 1, nil
+}
+
 func (r RepositoryImpl) GetComments() ([]models.Comments, error) {
 	var commets []models.Comments
 	rows, err := r.db.Query(`SELECT * FROM comments`)
@@ -103,25 +118,48 @@ func (r RepositoryImpl) GetIdPost(postId int) (int, error) {
 	}
 	return idPost, nil
 }
-func (r RepositoryImpl) GetPosts() ([]models.Post, error) {
+func (r RepositoryImpl) GetPosts(page, limit int) ([]models.Post, error) {
 	var posts []models.Post
-	rows, err := r.db.Query(`SELECT * FROM post`)
+	offset := (page - 1) * limit
+
+	rows, err := r.db.Query(`
+        SELECT p.id_post, p.id_user_create_post, p.theme, p.content_post, p.date_create, 
+               u.full_name, u.photo,u.login, LENGTH(p.content_post) > 500 as is_long
+        FROM post p 
+        JOIN user_profiles u ON p.id_user_create_post = u.id 
+        LIMIT $1 OFFSET $2`, limit, offset)
 	if err != nil {
-		return posts, err
+		return nil, err
 	}
 	defer rows.Close()
+
 	for rows.Next() {
 		var post models.Post
+		var isLong bool
 
-		if err := rows.Scan(&post.Id_post, &post.Id_User, &post.Theme, &post.Content_post, &post.Date_create); err != nil {
-			return posts, err
+		if err := rows.Scan(
+			&post.Id_post,
+			&post.Id_User,
+			&post.Theme,
+			&post.Content_post,
+			&post.Date_create,
+			&post.FullName,
+			&post.Photo,
+			&post.Login,
+			&isLong,
+		); err != nil {
+			return nil, err
 		}
+
+		post.IsLong = isLong
 		posts = append(posts, post)
 	}
+
 	if err := rows.Err(); err != nil {
-		return posts, err
+		return nil, err
 	}
-	return posts, err
+
+	return posts, nil
 }
 
 func (r RepositoryImpl) CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error) {
@@ -136,7 +174,7 @@ func (r RepositoryImpl) CreateComment(userId int, postId int, comment models.Com
 }
 func (r RepositoryImpl) CreatePost(UserID int, post models.Post) error {
 
-	row, err := r.db.Query(`INSERT INTO post (id_user_create_post, theme, content_post, date_create_post) 
+	row, err := r.db.Query(`INSERT INTO post (id_user_create_post, theme, content_post, date_create) 
 	VALUES ($1, $2,$3,$4)`,
 		UserID, post.Theme, post.Content_post, date)
 	if row != nil {
@@ -160,7 +198,7 @@ func (r RepositoryImpl) SignIn(login string) ([]byte, int, error) {
 }
 func (r RepositoryImpl) SignUp(user models.User, hashPass models.Credentials) error {
 
-	row, err := r.db.Query(`INSERT INTO user_profiles (login, email, password, full_name_user,  photo) 
+	row, err := r.db.Query(`INSERT INTO user_profiles (login, email, password, full_name,  photo) 
 	VALUES ($1, $2,$3,$4,$5)`,
 		user.Login, user.Email, hashPass.Password, user.FullNameUser, user.Photo)
 	if row != nil {

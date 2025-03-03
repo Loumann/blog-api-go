@@ -15,5 +15,9 @@ type Post struct {
 	Id_User      int    `json:"id_user_create_post" db:"id_user_create_post"`
 	Theme        string `json:"theme" db:"theme"`
 	Content_post string `json:"content_post" db:"content_post"`
-	Date_create  string `json:"date_create_post" db:"date_create_post"`
+	Date_create  string `json:"date_create" db:"date_create"`
+	FullName     string `json:"fullname" db:"fullname"`
+	Photo        string `json:"photo" db:"photo"`
+	IsLong       bool   `json:"is_long" db:"is_long"`
+	Login        string `json:"login" db:"login"`
 }

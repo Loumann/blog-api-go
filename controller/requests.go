@@ -7,18 +7,13 @@ import (
 func (c *Controller) InitRouters() *gin.Engine {
 	router := gin.Default()
 
-	authorization := router.Group("/auth")
-	{
-		authorization.POST("/sign-in", c.SignIn)
-		authorization.POST("/sign-up", c.SignUp)
-	}
-
 	router.LoadHTMLGlob("template/*")
 	router.Static("/static", "./static")
 
 	router.GET("/", c.LoginPage)
 	router.GET("/feed", c.OnPointWindowLocation)
 	router.GET("/registration", c.SignUpPage)
+	router.GET("/:login", c.GetProfileFromLogin)
 
 	router.GET("/users", c.GetProfile)
 

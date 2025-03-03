@@ -9,11 +9,12 @@ type Service interface {
 	SignIn(login string) ([]byte, int, error)
 	SignUp(user models.User, hashPass models.Credentials) error
 
+	GetProfileUserForLogin(login string) (models.User, int, error)
 	GetAllUsers() ([]models.User, error)
 	GetIdPost(userId int) (int, error)
 	GetComments() ([]models.Comments, error)
-	GetProfileUser(UserID int) ([]models.User, int, error)
-	GetPosts() ([]models.Post, error)
+	GetProfileUser(UserID int) (models.User, int, error)
+	GetPosts(pageInt, limitInt int) ([]models.Post, error)
 
 	DeletePost(postId int) error
 	DeleteComment(CommentId int) error

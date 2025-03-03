@@ -1,41 +1,72 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Новости</title>
-    <link rel="stylesheet" href="../static/css/headProfile.css">
-    <script src="static/js/profile.js"></script>
+    <link rel="stylesheet" href="static/css/MainTitle.css">
+    <script src="static/js/script.js"></script>
+    <style>
+
+    </style>
 </head>
 <body>
 
 <header>
-    <div  id="profile">
-        <img src="profile-pic.jpg" alt="Profile Picture">
-        <span class="username">User Name</span>
+
+    <div id="profile" onclick="toggleDropdown()">
+        <img src="avatar.jpg" alt="Фото профиля">
     </div>
-    <div></div>
-    <div class="actions">
+
+    <div id="dropdown-menu" class="dropdown-menu">
+        <a href="#">Моя страница</a>
+        <a href="#">Мои подписки</a>
+        <a href="#">Настройки</a>
+        <a href="#">Помощь</a>
+        <a href="#">Выйти</a>
     </div>
+
+    <div id="dropdown-menu" class="dropdown-menu">
+        <a href="#">Моя страница</a>
+        <a href="#">Мои подписки</a>
+        <a href="#">Настройки</a>
+        <a href="#">Помощь</a>
+        <a href="#">Выйти</a>
+    </div>
+
+
+
+
+    <div id="logo" class="logo">
+        <h1>+</h1>
+    </div>
+
+
+    <div id="logo" class="logo">
+        <h1>OnePoint</h1>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            dropdownMenu.classList.toggle('show');
+        }
+
+        window.addEventListener('click', function(event) {
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const profile = document.getElementById('profile');
+            if (!profile.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    </script>
 </header>
 
 <main>
-
     <div id="posts-container"></div>
-    <div class="post">
-        <div class="post-header">
-            <img src="user-pic.jpg" alt="User Picture">
-            <span class="username">User Name</span>
-        </div>
-        <div class="content">
-            This is a sample post content. It could be a text, image, or any other media.
-        </div>
+    <div id="loading">Загружаем посты...</div>
 
-        <div class="comment-form">
-            <input type="text" placeholder="Add a comment...">
-            <button onclick="loadPosts()">Загрузить посты</button>
-        </div>
-    </div>
-
+    <script src="static/js/lazyload.js" defer></script>
 </main>
 
 </body>

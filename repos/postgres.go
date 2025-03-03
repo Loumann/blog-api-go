@@ -39,7 +39,7 @@ func getConnectDatabase(env *models.Environment, config *config.Config) *sql.DB 
 		log.Fatalf(err.Error())
 	}
 	if err = db.Ping(); err != nil {
-		log.Fatalf(`database open connect: %s`, err.Error())
+		log.Fatalf(`database open connect: %v`, err.Error())
 	}
 	return db
 }
