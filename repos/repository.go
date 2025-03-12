@@ -76,8 +76,7 @@ func (r RepositoryImpl) GetProfileUserForLogin(login string) (models.User, int, 
 
 	row := r.db.QueryRow(`SELECT id, login, email, password, full_name, photo FROM user_profiles WHERE login = $1`, login)
 
-	err := row.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo)
-	if err != nil {
+	if err := row.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo); err != nil {
 		if err == sql.ErrNoRows {
 			return user, 0, fmt.Errorf("пользователь с login %d не найден", login)
 		}

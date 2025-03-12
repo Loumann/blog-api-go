@@ -16,3 +16,7 @@ func (c *Controller) OnPointWindowLocation(con *gin.Context) {
 func (c *Controller) SignUpPage(con *gin.Context) {
 	con.HTML(http.StatusOK, "Registration.html", nil)
 }
+
+func (c *Controller) MyPage(con *gin.Context) {
+	con.HTML(http.StatusOK, "MyPage.html", nil)
+}

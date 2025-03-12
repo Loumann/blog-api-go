@@ -15,9 +15,11 @@ const path = "env.local"
 
 func LoadEnv() *Environment {
 	environmentVariables := Environment{}
+
 	if err := godotenv.Load(path); err != nil {
 		panic(fmt.Sprintf("Failed to load env.local file: %s", err.Error()))
 	}
+
 	if err := env.Parse(&environmentVariables); err != nil {
 		panic(fmt.Sprintf("Failed to parse environment variables: %s", err.Error()))
 	}

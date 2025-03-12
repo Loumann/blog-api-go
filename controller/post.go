@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func (c *Controller) CreatePost(context *gin.Context) {
+func (c Controller) CreatePost(context *gin.Context) {
 	var Post models.Post
 	claims := &models.Claims{}
 	c.ParserJWT(context, claims)

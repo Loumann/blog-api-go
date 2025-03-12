@@ -7,30 +7,31 @@ import (
 func (c *Controller) InitRouters() *gin.Engine {
 	router := gin.Default()
 
-	router.LoadHTMLGlob("template/*")
+	router.LoadHTMLGlob("static/template/*")
 	router.Static("/static", "./static")
 
 	router.GET("/", c.LoginPage)
 	router.GET("/feed", c.OnPointWindowLocation)
 	router.GET("/registration", c.SignUpPage)
 	router.GET("/:login", c.GetProfileFromLogin)
+	router.GET("/page", c.MyPage)
 
 	router.GET("/users", c.GetProfile)
 
 	post := router.Group("/post")
 	{
 		post.GET("/", c.GetPosts)
-		post.POST("/create", c.CreatePost)
-		post.DELETE("/delete/:postId", c.DeletePost)
-		post.PUT("/change", c.ChangePost)
+		post.POST("/", c.CreatePost)
+		post.DELETE("/:postId", c.DeletePost)
+		post.PUT("/", c.ChangePost)
 	}
 
 	comment := router.Group("/comment")
 	{
-		comment.POST("/create-com", c.CreateComment)
+		comment.POST("/", c.CreateComment)
 		comment.GET("/", c.GetComments)
 		comment.DELETE("/:commentId", c.DeleteComment)
-		comment.PUT("/change", c.ChangeComment)
+		comment.PUT("/", c.ChangeComment)
 	}
 
 	router.POST("/sign-in", c.SignIn)

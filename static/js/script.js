@@ -1,5 +1,3 @@
-console.log("JS file loaded!");
-
 function Sign_In() {
     let xhr = new XMLHttpRequest();
     let log = document.getElementById("login");
@@ -28,7 +26,8 @@ function Sign_In() {
                 document.getElementById("message").innerText = "Ошибка входа";
             }
         } else if (xhr.readyState === 4) {
-            document.getElementById("message").innerText = "Логин или пароль неверны";
+            document.getElementById("message").style.color = "red";
+            document.getElementById("message").innerText = "Неверный логин или пароль";
         }
     };
 
@@ -165,6 +164,77 @@ function signup() {
         });
 }
 
+function toggleDropdown() {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    dropdownMenu.classList.toggle('show');
+}
+
+function openModal() {
+    document.getElementById("modalOverlay").style.display = "flex";
+}
+
+function closeModal() {
+
+    document.getElementById("modalOverlay").style.display = "none";
+
+    document.getElementById("postTitle").value = "";
+    document.getElementById("contentInput").value= "";
+
+}
+
+function createPost() {
+    let titleInput = document.getElementById("postTitle");
+    let contentInput = document.getElementById("postContent");
+    let title = titleInput.value.trim();
+    let content = contentInput.value.trim();
+    const token = localStorage.getItem("token");
+
+    if (!title ) {
+        titleInput.style.animation = "none";
+        titleInput.offsetHeight;
+        titleInput.style.animation = "shake 0.3s";
+        titleInput.placeholder = "Заполните все поля!";
+        return;
+
+    } else if (!content) {
+        contentInput.style.animation = "none";
+        contentInput.offsetHeight;
+        contentInput.style.animation = "shake 0.3s";
+        contentInput.placeholder = "Заполните все поля!";
+        return;
+    }
+
+    const post = {
+        theme: title,
+        content_post: content,
+        date_create_post: new Date().toISOString()
+    };
+
+    fetch("/post", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(post)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка создания поста: " + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert("Создание успешно!");
+            titleInput.value = "";
+            contentInput.value = "";
+            closeModal()
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
+
 window.onload = function() {
     const token = localStorage.getItem("token");
     const profile = document.getElementById("profile");
@@ -178,12 +248,6 @@ window.onload = function() {
         console.log("No token found. Please log in.");
     }
 };
-
-function toggleDropdown() {
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    dropdownMenu.classList.toggle('show');
-}
-
 window.addEventListener('click', function(event) {
     const dropdownMenu = document.getElementById('dropdown-menu');
     const profile = document.getElementById('profile');
