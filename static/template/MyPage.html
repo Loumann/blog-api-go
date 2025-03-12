@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новости</title>
+    <link rel="stylesheet" href="static/css/MainTitle.css">
+    <link rel="stylesheet" href="static/css/Search.css">
+    <script src="static/js/script.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+
+<header>
+
+    <div id="profile" onclick="toggleDropdown()">
+        <img src="avatar.jpg" alt="Фото профиля">
+    </div>
+
+    <div id="dropdown-menu" class="dropdown-menu">
+        <a href="#">Моя страница</a>
+        <a href="#">Мои подписки</a>
+        <a href="#">Настройки</a>
+        <a href="#">Помощь</a>
+        <a href="#">Выйти</a>
+    </div>
+
+    <button onclick="openModal()">Создать пост</button>
+
+
+
+    <div id="logo" class="logo">
+        <h1>OnePoint</h1>
+    </div>
+
+    <script>
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            dropdownMenu.classList.toggle('show');
+        }
+
+        window.addEventListener('click', function(event) {
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const profile = document.getElementById('profile');
+            if (!profile.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    </script>
+</header>
+<main>
+    <div class="search-container">
+        <input type="text" id="search" placeholder="Поиск по логину..." class="search-input">
+        <div id="userList"></div>
+    </div>
+    <script src="static/js/userSearch.js"></script>
+</main>
+
+</body>
+</html>
