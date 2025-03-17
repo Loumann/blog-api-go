@@ -25,11 +25,14 @@ function formatDate(isoString) {
 }
 
 function loadPosts() {
+
     fetch(`http://localhost:8080/post/?page=${page}&own=${own}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
 
+            console.log(posts);
+            console.log(data.posts);
             if (data.posts === null) {
                 alert("No posts found.");
                 return;
@@ -54,7 +57,10 @@ function loadPosts() {
                         </div>
                        <button onclick=editPost(this) class="icon-button">
                            <img src="static/PhotoBase/refaund.png" alt="Редактировать">
-                           <img src="static/PhotoBase/delete-button.png" alt="удалить">
+                       </button>
+                       
+                       <button class="delete-button" onclick=deletePost(this) >
+                            <img src="static/PhotoBase/delete-button.png" alt="удалить">
                        </button>
                </div>
                <h3>${post.theme}</h3>
@@ -97,11 +103,6 @@ function loadPosts() {
         .finally(() => {
             loadingIndicator.style.display = 'none';
         });
-}
-
-function noFoundPosts(){
-    const postElement document.createElement("div")
-    postElement.classList.add("")
 }
 
 
