@@ -10,8 +10,8 @@ func (s Services) GetIdPost(userId int) (int, error) {
 	return s.Repository.GetIdPost(userId)
 }
 
-func (s Services) GetPosts(pageInt, limitInt int) ([]models.Post, error) {
-	return s.Repository.GetPosts(pageInt, limitInt)
+func (s Services) GetPosts(userId, pageInt, limitInt int, own bool) ([]models.Post, error) {
+	return s.Repository.GetPosts(userId, pageInt, limitInt, own)
 }
 
 func (s Services) DeletePost(postId int) error {

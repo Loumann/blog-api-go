@@ -27,28 +27,12 @@
         <a href="#">Выйти</a>
     </div>
 
-    <button onclick="openModal()">Создать пост</button>
-
-
+    <button content="Создать пост" onclick="openModal()">+</button>
 
     <div id="logo" class="logo">
         <h1>OnePoint</h1>
     </div>
 
-    <script>
-        function toggleDropdown() {
-            const dropdownMenu = document.getElementById('dropdown-menu');
-            dropdownMenu.classList.toggle('show');
-        }
-
-        window.addEventListener('click', function(event) {
-            const dropdownMenu = document.getElementById('dropdown-menu');
-            const profile = document.getElementById('profile');
-            if (!profile.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
-    </script>
 </header>
 
 <main>

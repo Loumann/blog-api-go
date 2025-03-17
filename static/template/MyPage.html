@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новости</title>
+    <title>Мои посты</title>
     <link rel="stylesheet" href="static/css/MainTitle.css">
     <link rel="stylesheet" href="static/css/Search.css">
     <script src="static/js/script.js"></script>
@@ -27,7 +27,7 @@
         <a href="#">Выйти</a>
     </div>
 
-    <button onclick="openModal()">Создать пост</button>
+    <button  id="create-post" class="create-post" onclick="openModal()">+</button>
 
 
 
@@ -51,11 +51,27 @@
     </script>
 </header>
 <main>
-    <div class="search-container">
-        <input type="text" id="search" placeholder="Поиск по логину..." class="search-input">
-        <div id="userList"></div>
+
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalEdit()">&times;</span>
+            <h2>Редактировать пост</h2>
+            <input type="hidden" id="edit-post-id">
+            <label>Тема:</label>
+            <input type="text" id="edit-title">
+            <label>Контент:</label>
+            <textarea id="edit-content"></textarea>
+            <button onclick="savePost()">Сохранить</button>
+        </div>
     </div>
-    <script src="static/js/userSearch.js"></script>
+
+
+
+    <div id="posts-container"></div>
+    <div id="loading">Загружаем посты...</div>
+    <script src="static/js/myPost.js"></script>
+    
 </main>
 
 </body>

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"blog-api-go/models"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -28,22 +29,43 @@ func (c Controller) CreatePost(context *gin.Context) {
 func (c Controller) GetPosts(context *gin.Context) {
 	page := context.DefaultQuery("page", "1")
 	limit := context.DefaultQuery("limit", "10")
+	userId := context.DefaultQuery("own", "false")
+	own, err := strconv.ParseBool(userId)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err})
+	}
 
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid page parameter"})
-		return
+		context.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
+
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit parameter"})
 		return
 	}
 
-	posts, err := c.Services.GetPosts(pageInt, limitInt)
+	tokenString, err := context.Cookie("token")
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Token not found"})
+		return
+	}
+
+	var claims models.Claims
+	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("my_secret_key"), nil
+	})
+
+	if err != nil || !token.Valid {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	posts, err := c.Services.GetPosts(claims.UserId, pageInt, limitInt, own)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error getting posts", err.Error())
+		log.Println("Error getting posts:", err.Error())
 		return
 	}
 

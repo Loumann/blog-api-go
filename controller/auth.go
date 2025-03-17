@@ -2,13 +2,11 @@ package controller
 
 import (
 	"blog-api-go/models"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -36,7 +34,6 @@ func (c Controller) SignUp(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "Internal error"})
 		return
 	}
-	log.Println("Hashed password:", string(hashedPass))
 
 	hashPass.Password = string(hashedPass)
 
@@ -98,9 +95,12 @@ func (c Controller) GetUsers(context *gin.Context) {
 	context.JSON(200, gin.H{"profile": users})
 	context.AbortWithStatus(http.StatusOK)
 }
+
 func (c Controller) GetProfile(context *gin.Context) {
 	claims := &models.Claims{}
+
 	c.ParserJWT(context, claims)
+
 	user, _, err := c.Services.GetProfileUser(claims.UserId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -154,7 +154,7 @@ func (c Controller) ParserJWT(context *gin.Context, claims *models.Claims) {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
-	fmt.Printf(strconv.Itoa(claims.UserId))
+
 	if claims.UserId == 0 {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
 		return

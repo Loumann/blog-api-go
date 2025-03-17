@@ -235,6 +235,58 @@ function createPost() {
         });
 }
 
+function closeModalEdit() {
+    document.getElementById("edit-modal").style.display = "none";
+}
+
+function editPost(button) {
+    const postElement = button.closest(".post");
+    if (!postElement) {
+        console.error("Ошибка: Не найден родительский элемент .post");
+        return;
+    }
+
+    const postId = postElement.getAttribute("data-id");
+
+    const title = postElement.querySelector("h3")?.textContent || "Без заголовка";
+
+    const contentElement = postElement.querySelector(".full-text") || postElement.querySelector(".short-text");
+    const content = contentElement ? contentElement.textContent : "Нет контента";
+
+    document.getElementById("edit-post-id").value = postId;
+    document.getElementById("edit-title").value = title;
+    document.getElementById("edit-content").value = content;
+
+    document.getElementById("edit-modal").style.display = "block";
+}
+
+async function savePost() {
+    const postId = document.getElementById("edit-post-id").value;
+    const title = document.getElementById("edit-title").value;
+    const content = document.getElementById("edit-content").value;
+
+
+const post = {
+    id_post: 4,
+    theme: title,
+    content_post: content,
+
+}
+
+    const response = await fetch("http://localhost:8080/post", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(post)
+    });
+
+    const result = await response.json();
+    alert(result.message || result.error);
+
+    if (response.ok) {
+        location.reload(); // Обновляем страницу
+    }
+}
+
 window.onload = function() {
     const token = localStorage.getItem("token");
     const profile = document.getElementById("profile");

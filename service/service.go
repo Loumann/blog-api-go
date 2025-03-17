@@ -14,7 +14,8 @@ type Service interface {
 	GetIdPost(userId int) (int, error)
 	GetComments() ([]models.Comments, error)
 	GetProfileUser(UserID int) (models.User, int, error)
-	GetPosts(pageInt, limitInt int) ([]models.Post, error)
+
+	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
 	DeletePost(postId int) error
 	DeleteComment(CommentId int) error

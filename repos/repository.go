@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+var date = time.Now().Format("2006-01-02 15:04:05")
+
+type RepositoryImpl struct {
+	db *sqlx.DB
+}
 type Repository interface {
 	SignIn(login string) ([]byte, int, error)
 	SignUp(user models.User, hashPass models.Credentials) (err error)
@@ -17,7 +22,7 @@ type Repository interface {
 	GetProfileUser(UserID int) (models.User, int, error)
 	GetComments() ([]models.Comments, error)
 	GetIdPost(PostId int) (int, error)
-	GetPosts(page, limit int) ([]models.Post, error)
+	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
 	CreatePost(UserID int, post models.Post) error
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
@@ -32,12 +37,6 @@ type Repository interface {
 func NewRepository(db *sqlx.DB) *RepositoryImpl {
 	return &RepositoryImpl{db: db}
 }
-
-type RepositoryImpl struct {
-	db *sqlx.DB
-}
-
-var date = time.Now().Format("2006-01-02 15:04:05")
 
 func (r RepositoryImpl) GetAllUsers() ([]models.User, error) {
 	var users []models.User
@@ -55,6 +54,7 @@ func (r RepositoryImpl) GetAllUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
+
 func (r RepositoryImpl) GetProfileUser(UserID int) (models.User, int, error) {
 	var user models.User
 
@@ -70,7 +70,6 @@ func (r RepositoryImpl) GetProfileUser(UserID int) (models.User, int, error) {
 
 	return user, 1, nil
 }
-
 func (r RepositoryImpl) GetProfileUserForLogin(login string) (models.User, int, error) {
 	var user models.User
 
@@ -117,16 +116,31 @@ func (r RepositoryImpl) GetIdPost(postId int) (int, error) {
 	}
 	return idPost, nil
 }
-func (r RepositoryImpl) GetPosts(page, limit int) ([]models.Post, error) {
+func (r RepositoryImpl) GetPosts(userID, page, limit int, own bool) ([]models.Post, error) {
 	var posts []models.Post
 	offset := (page - 1) * limit
 
-	rows, err := r.db.Query(`
-        SELECT p.id_post, p.id_user_create_post, p.theme, p.content_post, p.date_create, 
-               u.full_name, u.photo,u.login, LENGTH(p.content_post) > 500 as is_long
-        FROM post p 
-        JOIN user_profiles u ON p.id_user_create_post = u.id 
-        LIMIT $1 OFFSET $2`, limit, offset)
+	var rows *sql.Rows
+	var err error
+
+	if own == true {
+		rows, err = r.db.Query(`SELECT p.id_post, p.id_user_create_post, p.theme, p.content_post, p.date_create, 
+                   u.full_name, u.photo, u.login, LENGTH(p.content_post) > 500 as is_long
+            FROM post p 
+            JOIN user_profiles u ON p.id_user_create_post = u.id 
+            WHERE p.id_user_create_post = $1 
+            ORDER BY date_create DESC
+            LIMIT $2 OFFSET $3`, userID, limit, offset)
+	} else {
+		rows, err = r.db.Query(`
+            SELECT p.id_post, p.id_user_create_post, p.theme, p.content_post, p.date_create, 
+                   u.full_name, u.photo, u.login, LENGTH(p.content_post) > 500 as is_long
+            FROM post p 
+            JOIN user_profiles u ON p.id_user_create_post = u.id 
+            ORDER BY date_create DESC
+            LIMIT $1 OFFSET $2`, limit, offset)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +253,7 @@ func (r RepositoryImpl) ChangePost(post models.Post) (bool, error) {
 		return false, nil
 	}
 
-	_, err = r.db.Exec(`UPDATE post SET theme=$1, content_post=$2, date_create_post=$3 WHERE id_post=$4`,
+	_, err = r.db.Exec(`UPDATE post SET theme=$1, content_post=$2, date_create=$3 WHERE id_post=$4`,
 		post.Theme, post.Content_post, date, post.Id_post)
 	return true, err
 }
