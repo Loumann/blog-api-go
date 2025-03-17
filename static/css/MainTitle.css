@@ -200,9 +200,11 @@ main {
     transform: scale(1.02);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
 .post-header {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
 }
 .post-header img {
     width: 40px;
@@ -444,7 +446,7 @@ button {
 }
 
 .modal {
-    display: none;
+    display: flex;
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -456,6 +458,7 @@ button {
     flex-direction: column;
     align-content: center;
 }
+
 .modal input{
     width: 100%;
     margin-top: 10px;
@@ -470,7 +473,9 @@ button {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    resize: none;
 }
+
 .modal button {
     margin-top: 10px;
     padding: 8px 12px;
@@ -484,6 +489,10 @@ button {
     background: #0056b3;
 }
 
+.delete-button{
+    color: white;
+    background-color: white;
+}
 .close {
     float: right;
     font-size: 28px;

@@ -287,6 +287,31 @@ const post = {
     }
 }
 
+function deletePost(){
+    const postId = document.getElementById("edit-post-id").value;
+
+    const post = {
+        id_post: postId,
+    }
+
+    fetch(
+        "http://localhost:8080/post/",{
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(post)
+        }
+
+    )
+    .then(response => {
+        if (!response.ok) {
+
+        }
+    })
+    .catch(error => {
+        alert(error.message);
+    })
+}
+
 window.onload = function() {
     const token = localStorage.getItem("token");
     const profile = document.getElementById("profile");
