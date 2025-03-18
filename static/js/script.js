@@ -1,3 +1,4 @@
+
 function Sign_In() {
     let xhr = new XMLHttpRequest();
     let log = document.getElementById("login");
@@ -241,6 +242,7 @@ function closeModalEdit() {
 
 function editPost(button) {
     const postElement = button.closest(".post");
+
     if (!postElement) {
         console.error("Ошибка: Не найден родительский элемент .post");
         return;
@@ -257,7 +259,7 @@ function editPost(button) {
     document.getElementById("edit-title").value = title;
     document.getElementById("edit-content").value = content;
 
-    document.getElementById("edit-modal").style.display = "block";
+    document.getElementById("edit-modal").style.display = "flex";
 }
 
 async function savePost() {
@@ -267,13 +269,13 @@ async function savePost() {
 
 
 const post = {
-    id_post: 4,
+    id_post: postId,
     theme: title,
     content_post: content,
 
 }
 
-    const response = await fetch("http://localhost:8080/post", {
+    const response = await fetch(`http://localhost:8080/post`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(post)
@@ -287,30 +289,20 @@ const post = {
     }
 }
 
-function deletePost(){
-    const postId = document.getElementById("edit-post-id").value;
 
-    const post = {
-        id_post: postId,
-    }
-
-    fetch(
-        "http://localhost:8080/post/",{
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(post)
-        }
-
-    )
-    .then(response => {
-        if (!response.ok) {
-
-        }
-    })
-    .catch(error => {
-        alert(error.message);
-    })
+function toggleDropdown() {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    dropdownMenu.classList.toggle('show');
 }
+
+window.addEventListener('click', function(event) {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const profile = document.getElementById('profile');
+    if (!profile.contains(event.target)) {
+        dropdownMenu.classList.remove('show');
+    }
+});
+
 
 window.onload = function() {
     const token = localStorage.getItem("token");

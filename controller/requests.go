@@ -15,6 +15,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.GET("/registration", c.SignUpPage)
 	router.GET("/:login", c.GetProfileFromLogin)
 	router.GET("/page", c.MyPage)
+	router.GET("/search", c.SearchPage)
 
 	router.GET("/users", c.GetProfile)
 

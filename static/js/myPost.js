@@ -2,6 +2,7 @@ let page = 1;
 let own  = true;
 const postsContainer = document.getElementById('posts-container');
 const loadingIndicator = document.getElementById('loading');
+
 const observer = new IntersectionObserver((entries) => {
     const lastPost = entries[0];
     if (lastPost.isIntersecting) {
@@ -33,10 +34,8 @@ function loadPosts() {
 
             console.log(posts);
             console.log(data.posts);
-            if (data.posts === null) {
-                alert("No posts found.");
-                return;
-            }
+
+
 
 
 
@@ -59,7 +58,7 @@ function loadPosts() {
                            <img src="static/PhotoBase/refaund.png" alt="Редактировать">
                        </button>
                        
-                       <button class="delete-button" onclick=deletePost(this) >
+                       <button class="delete-button" onclick=deletePost(${post.id_post}) >
                             <img src="static/PhotoBase/delete-button.png" alt="удалить">
                        </button>
                </div>
@@ -105,6 +104,26 @@ function loadPosts() {
         });
 }
 
+function deletePost(postId) {
+    fetch(`http://localhost:8080/post/${postId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+    })
+        .then(response => {
+            if (!response.ok) {
+                alert("Ошибка при удалении поста.");
+            } else {
+                alert("Пост успешно удален.");
+                const postElement = document.getElementById(`post-${postId}`);
+                if (postElement) {
+                    postElement.remove();
+                }
+            }
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
 
 loadPosts();
 

@@ -18,14 +18,17 @@
     </div>
 
     <div id="dropdown-menu" class="dropdown-menu">
-        <a href="http://localhost:8080/page">Моя страница</a>
-        <a onclick="openSearch" href="#">Поиск</a>
+        <a href="/page">Моя страница</a>
+        <a href="#">Поиск</a>
         <a href="#">Настройки</a>
         <a href="#">Помощь</a>
         <a href="#">Выйти</a>
     </div>
 
-    <button content="Создать пост" onclick="openModal()">Постнуть</button>
+
+
+
+
     <div id="logo" class="logo">
         <h1>OnePoint</h1>
     </div>
@@ -33,19 +36,7 @@
 
 <main>
 
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h2>Новый пост</h2>
-            <input type="text" placeholder="Тема" id="postTitle">
-            <textarea placeholder="Напишите что-нибудь..." id="postContent"></textarea>
-            <br>
-            <button onclick="closeModal()">Закрыть</button>
-            <button onclick="createPost()">Опубликовать</button>
-        </div>
-    </div>
 
-    <div id="posts-container"></div>
-    <div id="loading">Загружаем посты...</div>
 
     <script src="static/js/lazyload.js" defer></script>
 </main>
