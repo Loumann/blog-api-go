@@ -27,7 +27,7 @@ function formatDate(isoString) {
 
 function loadPosts() {
 
-    fetch(`http://localhost:8080/post/?page=${page}&own=${own}`)
+    fetch(`/post/?page=${page}&own=${own}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
@@ -105,7 +105,7 @@ function loadPosts() {
 }
 
 function deletePost(postId) {
-    fetch(`http://localhost:8080/post/${postId}`, {
+    fetch(`/post/${postId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
     })
@@ -124,6 +124,9 @@ function deletePost(postId) {
             alert(error.message);
         });
 }
+
+
+
 
 loadPosts();
 

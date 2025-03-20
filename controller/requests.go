@@ -13,7 +13,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.GET("/", c.LoginPage)
 	router.GET("/feed", c.OnPointWindowLocation)
 	router.GET("/registration", c.SignUpPage)
-	router.GET("/:login", c.GetProfileFromLogin)
+	router.GET("/users/:login", c.GetProfileFromLogin)
 	router.GET("/page", c.MyPage)
 	router.GET("/search", c.SearchPage)
 
@@ -25,6 +25,13 @@ func (c *Controller) InitRouters() *gin.Engine {
 		post.POST("/", c.CreatePost)
 		post.DELETE("/:postId", c.DeletePost)
 		post.PUT("/", c.ChangePost)
+	}
+
+	subscribe := router.Group("/subscribe")
+	{
+		subscribe.POST("/subscribe/:userId", c.CreatePost)
+		subscribe.DELETE("/subscribe/:userId")
+
 	}
 
 	comment := router.Group("/comment")

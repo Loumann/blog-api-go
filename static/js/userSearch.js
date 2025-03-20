@@ -1,9 +1,4 @@
 // userSearch.js
-const mockUsers = [
-    { id: 1, login: "egor123", subscribed: false },
-    { id: 2, login: "user456", subscribed: false },
-    { id: 3, login: "dev789", subscribed: false }
-];
 
 document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("search");

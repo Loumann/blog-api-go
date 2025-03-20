@@ -227,6 +227,7 @@ function createPost() {
         })
         .then(data => {
             alert("Создание успешно!");
+            window.location.reload();
             titleInput.value = "";
             contentInput.value = "";
             closeModal()
@@ -275,7 +276,7 @@ const post = {
 
 }
 
-    const response = await fetch(`http://localhost:8080/post`, {
+    const response = await fetch(`/post`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(post)

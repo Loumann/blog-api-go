@@ -7,7 +7,29 @@
     <link rel="stylesheet" href="static/css/MainTitle.css">
     <script src="static/js/script.js"></script>
     <style>
-
+        /* Добавь стили для списка пользователей */
+        #userList {
+            list-style: none;
+            padding: 0;
+        }
+        #userList li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -25,9 +47,9 @@
         <a href="#">Выйти</a>
     </div>
 
-
-
-
+    <div id="search" class="search-box">
+        <input type="text" id="searchInput" placeholder="Поиск пользователя...">
+    </div>
 
     <div id="logo" class="logo">
         <h1>OnePoint</h1>
@@ -35,10 +57,66 @@
 </header>
 
 <main>
+    <ul id="userList"></ul>
+
+    <script>
+        const searchInput = document.getElementById("searchInput");
+        const userList = document.getElementById("userList");
+
+        async function searchUsers(login) {
 
 
+            if (!login) {
+                userList.innerHTML = "";
+                return;
+            }
 
-    <script src="static/js/lazyload.js" defer></script>
+            try {
+                const response = await fetch(`/users/${login}`);
+                const data = await response.json();
+                console.log(data);
+                userList.innerHTML = "";
+
+                data.forEach(user => {
+
+                    const li = document.getElementById("userList")
+                    console.log(userList);
+                    li.innerHTML += `
+                <div>
+                    <img src="${user.photo}" alt="Фото профиля" style="width: 50px; height: 50px; border-radius: 50%;">
+                    <h3>${user.full_name}</h3>
+                    <p><strong>Логин:</strong> ${user.login}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                </div>
+                <button onclick="subscribeUser(${user.id})" class="subscribeButton">Подписаться</button>
+            `
+                })
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }
+        async function subscribeUser(userId) {
+            try {
+                const response = await fetch(`http://localhost:8080/users/subscribe`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId })
+                });
+
+                if (response.ok) {
+                    alert("Вы подписались!");
+                } else {
+                    alert("Ошибка подписки.");
+                }
+            } catch (error) {
+                console.error("Ошибка подписки:", error);
+            }
+        }
+
+        searchInput.addEventListener("input", (e) => searchUsers(e.target.value));
+    </script>
 </main>
 
 </body>

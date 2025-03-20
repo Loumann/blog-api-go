@@ -17,7 +17,8 @@ type Repository interface {
 	SignIn(login string) ([]byte, int, error)
 	SignUp(user models.User, hashPass models.Credentials) (err error)
 
-	GetProfileUserForLogin(login string) (models.User, int, error)
+	GetProfileUserForLogin(login string) ([]models.User, int, error)
+
 	GetAllUsers() ([]models.User, error)
 	GetProfileUser(UserID int) (models.User, int, error)
 	GetComments() ([]models.Comments, error)
@@ -70,19 +71,32 @@ func (r RepositoryImpl) GetProfileUser(UserID int) (models.User, int, error) {
 
 	return user, 1, nil
 }
-func (r RepositoryImpl) GetProfileUserForLogin(login string) (models.User, int, error) {
-	var user models.User
 
-	row := r.db.QueryRow(`SELECT id, login, email, password, full_name, photo FROM user_profiles WHERE login = $1`, login)
+func (r RepositoryImpl) GetProfileUserForLogin(login string) ([]models.User, int, error) {
+	var users []models.User
 
-	if err := row.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo); err != nil {
-		if err == sql.ErrNoRows {
-			return user, 0, fmt.Errorf("пользователь с login %d не найден", login)
+	searchQuery := "%" + login + "%"
+
+	rows, err := r.db.Query(`SELECT id, login, email, password, full_name, photo FROM user_profiles WHERE login LIKE $1`, searchQuery)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.Id, &user.Login, &user.Email, &user.Password, &user.FullNameUser, &user.Photo); err != nil {
+			return nil, 0, err
 		}
-		return user, 0, err
+		users = append(users, user)
 	}
 
-	return user, 1, nil
+	// Проверяем, есть ли найденные пользователи
+	if len(users) == 0 {
+		return nil, 0, fmt.Errorf("Пользователи с логином, содержащим '%s', не найдены", login)
+	}
+
+	return users, 1, nil
 }
 
 func (r RepositoryImpl) GetComments() ([]models.Comments, error) {

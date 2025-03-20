@@ -95,7 +95,6 @@ func (c Controller) GetUsers(context *gin.Context) {
 	context.JSON(200, gin.H{"profile": users})
 	context.AbortWithStatus(http.StatusOK)
 }
-
 func (c Controller) GetProfile(context *gin.Context) {
 	claims := &models.Claims{}
 
@@ -109,7 +108,6 @@ func (c Controller) GetProfile(context *gin.Context) {
 
 	context.JSON(http.StatusOK, user)
 }
-
 func (c Controller) GetProfileFromLogin(context *gin.Context) {
 	login := context.Param("login")
 	user, _, err := c.Services.GetProfileUserForLogin(login)

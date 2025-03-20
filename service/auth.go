@@ -17,7 +17,7 @@ func (s *Services) SignUp(user models.User, pass models.Credentials) error {
 func (s Services) GetProfileUser(UserId int) (models.User, int, error) {
 	return s.Repository.GetProfileUser(UserId)
 }
-func (s *Services) GetProfileUserForLogin(login string) (models.User, int, error) {
+func (s *Services) GetProfileUserForLogin(login string) ([]models.User, int, error) {
 	return s.Repository.GetProfileUserForLogin(login)
 
 }

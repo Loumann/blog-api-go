@@ -15,7 +15,7 @@ const postsContainer = document.getElementById('posts-container');
 const loadingIndicator = document.getElementById('loading');
 
 function loadPosts() {
-    fetch(`http://localhost:8080/post/?page=${page}`)
+    fetch(`/post/?page=${page}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
