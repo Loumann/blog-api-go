@@ -30,8 +30,8 @@ func (c *Controller) InitRouters() *gin.Engine {
 	subscribe := router.Group("/subscribe")
 	{
 		subscribe.POST("/:userId", c.Subscribe)
-		subscribe.POST("/check/:userId", c.IsSubscribe)
-		subscribe.DELETE("/:userId")
+		//subscribe.POST("/check/:userId", c.Unsubscribe)
+		//subscribe.DELETE("/:userId", c.Unsubscribe)
 	}
 
 	comment := router.Group("/comment")

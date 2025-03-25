@@ -14,12 +14,34 @@ let page = 1;
 const postsContainer = document.getElementById('posts-container');
 const loadingIndicator = document.getElementById('loading');
 
+
+function renderComments(comments) {
+    const commentsSection = document.getElementById("comments-section");
+    commentsSection.innerHTML = "";
+
+    comments.forEach(comment => {
+        const commentDiv = document.createElement("div");
+        commentDiv.classList.add("comment");
+        commentDiv.style.color = "red";
+        commentDiv.innerHTML = `
+            <p><strong>Пользователь ${comment.user_id}:</strong></p>
+            <p>${comment.content}</p>
+            <p><em>Создано: ${formatDate(comment.date_created)}</em></p>
+        `;
+
+        commentsSection.appendChild(commentDiv);
+    });
+}
+
+
+
 function loadPosts() {
     fetch(`/post/?page=${page}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
             posts.forEach(post => {
+                renderComments(post)
                 const postElement = document.createElement('div');
                 postElement.classList.add('post');
 

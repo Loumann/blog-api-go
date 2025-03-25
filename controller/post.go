@@ -92,19 +92,22 @@ func (c Controller) DeletePost(context *gin.Context) {
 func (c Controller) UpdatePost(context *gin.Context) {
 	var post models.Post
 
-	err := context.ShouldBindJSON(&post)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err})
+	if err := context.ShouldBindJSON(&post); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	update, err := c.Services.ChangePost(post)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+
 	if !update {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "post not exist"})
-
-	} else {
-		context.JSON(http.StatusOK, gin.H{"status": "post updated"})
+		return
 	}
+
+	context.JSON(http.StatusOK, gin.H{"status": "Post updated successfully"})
+	return
 }

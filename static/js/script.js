@@ -34,6 +34,67 @@ function Sign_In() {
 
     console.log(json);
 }
+function signup() {
+    const SIMPLE_EMAIL_REGEXP = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+    const login = document.getElementById("login").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const full_name = document.getElementById("full_name_user").value;
+    const photo = document.getElementById("photo").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const errorMessage = document.getElementById("errorMessage");
+
+    errorMessage.textContent = "";
+    if (!login || !email || !full_name || !password)
+    {
+        errorMessage.style.animation = "none"
+        errorMessage.offsetHeight;
+        errorMessage.style.animation = "shake 0.3s"
+        errorMessage.textContent = "Заполните полную форму";
+        return;
+    }
+
+
+
+    if (!SIMPLE_EMAIL_REGEXP.test(email)) {
+        errorMessage.textContent = "Некорректный формат email";
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        errorMessage.textContent = "Пароли не совпадают!";
+        return;
+    }
+
+    const user = {
+        login: login,
+        email: email,
+        password: password,
+        full_name: full_name,
+        photo: photo
+    };
+
+    fetch("/sign-up", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка регистрации");
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert("Регистрация успешна!");
+        })
+        .catch(error => {
+            errorMessage.textContent = error.message;
+        });
+}
 
 function loadProfile() {
     const token = localStorage.getItem("token");
@@ -103,85 +164,6 @@ function loadPosts() {
         });
 }
 
-function signup() {
-    const SIMPLE_EMAIL_REGEXP = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-
-    const login = document.getElementById("login").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const full_name = document.getElementById("full_name_user").value;
-    const photo = document.getElementById("photo").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-    const errorMessage = document.getElementById("errorMessage");
-
-    errorMessage.textContent = "";
-    if (!login || !email || !full_name || !password)
-    {
-        errorMessage.style.animation = "none"
-        errorMessage.offsetHeight;
-        errorMessage.style.animation = "shake 0.3s"
-        errorMessage.textContent = "Заполните полную форму";
-        return;
-    }
-
-
-
-    if (!SIMPLE_EMAIL_REGEXP.test(email)) {
-        errorMessage.textContent = "Некорректный формат email";
-        return;
-    }
-
-    if (password !== confirmPassword) {
-        errorMessage.textContent = "Пароли не совпадают!";
-        return;
-    }
-
-    const user = {
-        login: login,
-        email: email,
-        password: password,
-        full_name: full_name,
-        photo: photo
-    };
-
-    fetch("/sign-up", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Ошибка регистрации");
-            }
-            return response.json();
-        })
-        .then(data => {
-            alert("Регистрация успешна!");
-        })
-        .catch(error => {
-            errorMessage.textContent = error.message;
-        });
-}
-
-function toggleDropdown() {
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    dropdownMenu.classList.toggle('show');
-}
-
-function openModal() {
-    document.getElementById("modalOverlay").style.display = "flex";
-}
-
-function closeModal() {
-
-    document.getElementById("modalOverlay").style.display = "none";
-
-    document.getElementById("postTitle").value = "";
-    document.getElementById("contentInput").value= "";
-
-}
 
 function createPost() {
     let titleInput = document.getElementById("postTitle");
@@ -237,10 +219,6 @@ function createPost() {
         });
 }
 
-function closeModalEdit() {
-    document.getElementById("edit-modal").style.display = "none";
-}
-
 function editPost(button) {
     const postElement = button.closest(".post");
 
@@ -264,36 +242,40 @@ function editPost(button) {
 }
 
 async function savePost() {
-    const postId = document.getElementById("edit-post-id").value;
-    const title = document.getElementById("edit-title").value;
-    const content = document.getElementById("edit-content").value;
+    try {
+        const postId = document.getElementById("edit-post-id").value;
+        const title = document.getElementById("edit-title").value;
+        const content = document.getElementById("edit-content").value;
 
+        const post = {
+            id_post: parseInt(postId),
+            theme: title,
+            content_post: content
+        };
 
-const post = {
-    id_post: postId,
-    theme: title,
-    content_post: content,
+        const response = await fetch(`/post`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(post)
+        });
 
-}
+        if (!response.ok) {
+            throw new Error(`Ошибка запроса: ${response.status}`);
+        }
 
-    const response = await fetch(`/post`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(post)
-    });
+        const result = response.headers.get("Content-Length") === "0" ? {} : await response.json();
 
-    const result = await response.json();
-    alert(result.message || result.error);
+        alert(result.message || result.error || "Пост обновлён!");
 
-    if (response.ok) {
-        location.reload(); // Обновляем страницу
+        if (response.ok) {
+            location.reload();
+        }
+    } catch (error) {
+        console.error("Ошибка сохранения поста:", error);
+        alert("Ошибка сохранения поста: " + error.message);
     }
 }
 
-function toggleDropdown() {
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    dropdownMenu.classList.toggle('show');
-}
 
 window.addEventListener('click', function(event) {
     const dropdownMenu = document.getElementById('dropdown-menu');
@@ -304,6 +286,24 @@ window.addEventListener('click', function(event) {
 });
 
 
+function closeModalEdit() {
+    document.getElementById("edit-modal").style.display = "none";
+}
+function toggleDropdown() {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    dropdownMenu.classList.toggle('show');
+}
+function openModal() {
+    document.getElementById("modalOverlay").style.display = "flex";
+}
+function closeModal() {
+
+    document.getElementById("modalOverlay").style.display = "none";
+
+    document.getElementById("postTitle").value = "";
+    document.getElementById("contentInput").value= "";
+
+}
 window.onload = function() {
     const token = localStorage.getItem("token");
     const profile = document.getElementById("profile");

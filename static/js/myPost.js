@@ -26,19 +26,17 @@ function formatDate(isoString) {
 }
 
 function loadPosts() {
-
     fetch(`/post/?page=${page}&own=${own}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
 
-            console.log(posts);
             console.log(data.posts);
-
 
             posts.forEach(post => {
                 const postElement = document.createElement('div');
                 postElement.classList.add('post');
+                postElement.setAttribute("data-id", post.id_post); // Добавляем data-id
 
                 let shortText = post.content_post.slice(0, 500);
                 let isLong = post.is_long;
@@ -51,11 +49,11 @@ function loadPosts() {
                             <span class="fullname">${post.fullname}</span>
                             <span class="login">@${post.login}</span>
                         </div>
-                       <button onclick=editPost(this) class="icon-button">
+                       <button onclick="editPost(this)" class="icon-button">
                            <img src="static/PhotoBase/refaund.png" alt="Редактировать">
                        </button>
                        
-                       <button class="delete-button" onclick=deletePost(${post.id_post}) >
+                       <button class="delete-button" onclick="deletePost(${post.id_post})">
                             <img src="static/PhotoBase/delete-button.png" alt="удалить">
                        </button>
                </div>
