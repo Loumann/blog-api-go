@@ -99,7 +99,7 @@
         }
         async function subscribeUser(userId) {
             try {
-                const response = await fetch(`http://localhost:8080/users/subscribe`, {
+                const response = await fetch(`http://localhost:8080/subscribe/${userId}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ userId })

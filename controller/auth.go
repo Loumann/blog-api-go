@@ -119,6 +119,29 @@ func (c Controller) GetProfileFromLogin(context *gin.Context) {
 
 }
 
+func (c Controller) Subscribe(context *gin.Context) {
+	userId := context.Param("userId")
+	claims := &models.Claims{}
+	c.ParserJWT(context, claims)
+	print(claims.UserId, " ", userId)
+	err := c.Services.Subscribe(userId, claims.UserId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+}
+
+func (c Controller) IsSubscribe(context *gin.Context) {
+	userId := context.Param("userId")
+	claims := &models.Claims{}
+	c.ParserJWT(context, claims)
+	err, qr := c.Services.IsSubscribe(userId, claims.UserId)
+	if err != nil {
+		context.JSON(http.StatusOK, gin.H{"subscription": qr})
+	}
+
+}
+
 func (c Controller) GenerateJWT(userId int) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 

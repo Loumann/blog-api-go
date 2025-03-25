@@ -24,14 +24,14 @@ func (c *Controller) InitRouters() *gin.Engine {
 		post.GET("/", c.GetPosts)
 		post.POST("/", c.CreatePost)
 		post.DELETE("/:postId", c.DeletePost)
-		post.PUT("/", c.ChangePost)
+		post.PUT("/", c.UpdatePost)
 	}
 
 	subscribe := router.Group("/subscribe")
 	{
-		subscribe.POST("/subscribe/:userId", c.CreatePost)
-		subscribe.DELETE("/subscribe/:userId")
-
+		subscribe.POST("/:userId", c.Subscribe)
+		subscribe.POST("/check/:userId", c.IsSubscribe)
+		subscribe.DELETE("/:userId")
 	}
 
 	comment := router.Group("/comment")

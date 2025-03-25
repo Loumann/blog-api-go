@@ -25,6 +25,9 @@ type Repository interface {
 	GetIdPost(PostId int) (int, error)
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
+	Subscribe(UserID string, Subscriber int) error
+	IsSubscribe(UserId string, Subscriber int) (error, bool)
+
 	CreatePost(UserID int, post models.Post) error
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
 
@@ -287,4 +290,35 @@ func (r RepositoryImpl) ChangeComment(comment models.Comments) (bool, error) {
 	}
 	return true, nil
 
+}
+
+func (r RepositoryImpl) Subscribe(UserId string, Subscriber int) error {
+	qr, err := r.db.Query(`INSERT into subscribe (subscriber_id,subscribed_to_id, date_subscribed )
+		values ($1, $2, $3)`,
+		UserId, Subscriber, date)
+	print(qr)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (r RepositoryImpl) UnSubscribe(UserId string, Subscriber int) error {
+	qr, err := r.db.Query(`DELETE FROM subscribe WHERE subscriber_id=$1 and subscriber_id=$2`, UserId, Subscriber)
+	if err != nil {
+		return err
+	}
+	print(qr)
+	return err
+}
+
+func (r RepositoryImpl) IsSubscribe(UserId string, Subscriber int) (error, bool) {
+	qr := r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM subscribe WHERE subscriber_id = $1 AND subscribed_to_id = $2)`, Subscriber, UserId)
+	var exists bool
+	err := qr.Scan(&exists)
+	if err != nil {
+		return err, false
+	}
+	println(exists)
+	return err, exists
 }

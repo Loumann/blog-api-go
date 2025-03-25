@@ -14,10 +14,19 @@ func (s *Services) SignUp(user models.User, pass models.Credentials) error {
 	return s.Repository.SignUp(user, pass)
 }
 
-func (s Services) GetProfileUser(UserId int) (models.User, int, error) {
+func (s *Services) GetProfileUser(UserId int) (models.User, int, error) {
 	return s.Repository.GetProfileUser(UserId)
 }
 func (s *Services) GetProfileUserForLogin(login string) ([]models.User, int, error) {
 	return s.Repository.GetProfileUserForLogin(login)
 
+}
+
+func (s *Services) Subscribe(Subscribe string, UserId int) error {
+	return s.Repository.Subscribe(Subscribe, UserId)
+
+}
+
+func (s *Services) IsSubscribe(UserId string, Subscriber int) (error, bool) {
+	return s.Repository.IsSubscribe(UserId, Subscriber)
 }

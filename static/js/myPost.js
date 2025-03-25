@@ -36,9 +36,6 @@ function loadPosts() {
             console.log(data.posts);
 
 
-
-
-
             posts.forEach(post => {
                 const postElement = document.createElement('div');
                 postElement.classList.add('post');

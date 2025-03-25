@@ -89,7 +89,7 @@ func (c Controller) DeletePost(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"status": "post deleted"})
 }
 
-func (c Controller) ChangePost(context *gin.Context) {
+func (c Controller) UpdatePost(context *gin.Context) {
 	var post models.Post
 
 	err := context.ShouldBindJSON(&post)
