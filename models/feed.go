@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type Comments struct {
 	Id                 int       `json:"id_comment" db:"id"`
@@ -11,13 +14,13 @@ type Comments struct {
 }
 
 type Post struct {
-	Id_post      int    `json:"id_post" db:"id_post"`
-	Id_User      int    `json:"id_user_create_post" db:"id_user_create_post"`
-	Theme        string `json:"theme" db:"theme"`
-	Content_post string `json:"content_post" db:"content_post"`
-	Date_create  string `json:"date_create" db:"date_create"`
-	FullName     string `json:"fullname" db:"fullname"`
-	Photo        string `json:"photo" db:"photo"`
-	IsLong       bool   `json:"is_long" db:"is_long"`
-	Login        string `json:"login" db:"login"`
+	Id_post      int64          `json:"id_post" db:"id_post"`
+	Id_User      int64          `json:"id_user_create_post" db:"id_user_create_post"`
+	Theme        string         `json:"theme" db:"theme"`
+	Content_post string         `json:"content_post" db:"content_post"`
+	Date_create  string         `json:"date_create" db:"date_create"`
+	FullName     string         `json:"fullname" db:"fullname"`
+	Photo        sql.NullString `json:"photo" db:"photo"`
+	IsLong       bool           `json:"is_long" db:"is_long"`
+	Login        string         `json:"login" db:"login"`
 }

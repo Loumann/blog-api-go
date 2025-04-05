@@ -25,7 +25,7 @@ type Repository interface {
 	GetIdPost(PostId int) (int, error)
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
-	Subscribe(UserID string, Subscriber int) error
+	Subscribe(UserId string, Subscriber int) (bool, error)
 	IsSubscribe(UserId string, Subscriber int) (error, bool)
 
 	CreatePost(UserID int, post models.Post) error
@@ -292,17 +292,23 @@ func (r RepositoryImpl) ChangeComment(comment models.Comments) (bool, error) {
 
 }
 
-func (r RepositoryImpl) Subscribe(UserId string, Subscriber int) error {
-	qr, err := r.db.Query(`INSERT into subscribe (subscriber_id,subscribed_to_id, date_subscribed )
+func (r RepositoryImpl) Subscribe(UserId string, Subscriber int) (bool, error) {
+	var exist bool
+
+	qr := r.db.QueryRow(`SELECT exists(SELECT 1 FROM subscribe where subscriber_id=$2 AND subscribed_to_id=$2)`, UserId, Subscriber)
+	if err := qr.Err(); err != nil {
+		return false, err
+	}
+	if exist {
+		return false, nil
+	}
+	_, err := r.db.Exec(`INSERT into subscribe (subscriber_id,subscribed_to_id, date_subscribed )
 		values ($1, $2, $3)`,
 		UserId, Subscriber, date)
-	print(qr)
-	if err != nil {
-		return err
-	}
-	return err
-}
 
+	return err == nil, err
+
+}
 func (r RepositoryImpl) UnSubscribe(UserId string, Subscriber int) error {
 	qr, err := r.db.Query(`DELETE FROM subscribe WHERE subscriber_id=$1 and subscriber_id=$2`, UserId, Subscriber)
 	if err != nil {

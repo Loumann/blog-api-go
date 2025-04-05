@@ -123,24 +123,21 @@ func (c Controller) Subscribe(context *gin.Context) {
 	userId := context.Param("userId")
 	claims := &models.Claims{}
 	c.ParserJWT(context, claims)
-	print(claims.UserId, " ", userId)
-	err := c.Services.Subscribe(userId, claims.UserId)
+	qr, err := c.Services.Subscribe(userId, claims.UserId)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
+	print(qr)
 }
 
-func (c Controller) IsSubscribe(context *gin.Context) {
-	userId := context.Param("userId")
-	claims := &models.Claims{}
-	c.ParserJWT(context, claims)
-	err, qr := c.Services.IsSubscribe(userId, claims.UserId)
-	if err != nil {
-		context.JSON(http.StatusOK, gin.H{"subscription": qr})
-	}
-
-}
+//func (c Controller) Unsubscribe(context *gin.Context) {
+//	userId := context.Param("userId")
+//	claims := &models.Claims{}
+//	c.ParserJWT(context, claims)
+//	err := c.Services.Unsubscribe(userId, claims.UserId)
+//
+//}
 
 func (c Controller) GenerateJWT(userId int) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)

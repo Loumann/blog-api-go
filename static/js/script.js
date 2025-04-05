@@ -308,7 +308,6 @@ window.onload = function() {
     const token = localStorage.getItem("token");
     const profile = document.getElementById("profile");
 
-
     if (token) {
         console.log("Токен найден, загружаем профиль...");
         loadProfile();

@@ -34,6 +34,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
+
+    window.onload = function() {
+        document.getElementById('subscribeButton').addEventListener('click', renderUsers);
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                renderUsers();
+            }
+        });
+    };
+
+
+
     searchInput.addEventListener("input", renderUsers);
     renderUsers();
 });

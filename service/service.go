@@ -15,7 +15,7 @@ type Service interface {
 	GetComments() ([]models.Comments, error)
 	GetProfileUser(UserID int) (models.User, int, error)
 
-	Subscribe(UserID string, Subscribe int) error
+	Subscribe(UserId string, Subscriber int) (bool, error)
 	IsSubscribe(UserId string, Subscriber int) (error, bool)
 
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)

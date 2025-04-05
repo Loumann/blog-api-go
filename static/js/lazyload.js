@@ -41,7 +41,6 @@ function loadPosts() {
         .then(data => {
             const posts = data.posts;
             posts.forEach(post => {
-                renderComments(post)
                 const postElement = document.createElement('div');
                 postElement.classList.add('post');
 
