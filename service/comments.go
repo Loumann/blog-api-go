@@ -6,8 +6,8 @@ func (s Services) CreateComment(userId int, postId int, comment models.Comments)
 	return s.Repository.CreateComment(userId, postId, comment)
 }
 
-func (s Services) GetComments() (posts []models.Comments, err error) {
-	return s.Repository.GetComments()
+func (s Services) GetComments(idPost int) (posts []models.Comments, err error) {
+	return s.Repository.GetComments(idPost)
 }
 
 func (s Services) DeleteComment(CommentId int) error {

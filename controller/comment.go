@@ -4,7 +4,6 @@ import (
 	"blog-api-go/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -37,7 +36,7 @@ func (c *Controller) CreateComment(context *gin.Context) {
 		fmt.Printf(err.Error())
 	}
 
-	postId, err := c.Services.GetIdPost(input.Id_post_on_comment)
+	postId, err := c.Services.GetIdPost(input.Id_post)
 	if err != nil {
 		context.AbortWithStatusJSON(500, gin.H{"error": "post not exist"})
 		return
@@ -53,13 +52,24 @@ func (c *Controller) CreateComment(context *gin.Context) {
 }
 
 func (c *Controller) GetComments(context *gin.Context) {
-	post, err := c.Services.GetComments()
+	postIdStr := context.Query("post_id")
+	idPost, err := strconv.Atoi(postIdStr)
 	if err != nil {
-		context.JSON(401, gin.H{"error": err})
-		log.Fatal("error getting posts", err.Error())
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный post_id"})
+		return
 	}
-	context.AbortWithStatusJSON(http.StatusOK, post)
-	return
+
+	comments, err := c.Services.GetComments(idPost)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if comments == nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": "comments not exist"})
+		return
+	}
+
+	context.JSON(http.StatusOK, comments)
 }
 
 func (c Controller) DeleteComment(context *gin.Context) {

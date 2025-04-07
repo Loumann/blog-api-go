@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"time"
 )
 
@@ -21,12 +22,11 @@ type Repository interface {
 
 	GetAllUsers() ([]models.User, error)
 	GetProfileUser(UserID int) (models.User, int, error)
-	GetComments() ([]models.Comments, error)
+	GetComments(idPost int) ([]models.Comments, error)
 	GetIdPost(PostId int) (int, error)
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
-	Subscribe(UserId string, Subscriber int) (bool, error)
-	IsSubscribe(UserId string, Subscriber int) (error, bool)
+	ToggleSub(userID int, targetID string) bool
 
 	CreatePost(UserID int, post models.Post) error
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
@@ -102,21 +102,27 @@ func (r RepositoryImpl) GetProfileUserForLogin(login string) ([]models.User, int
 	return users, 1, nil
 }
 
-func (r RepositoryImpl) GetComments() ([]models.Comments, error) {
+func (r RepositoryImpl) GetComments(idPost int) ([]models.Comments, error) {
 	var commets []models.Comments
-	rows, err := r.db.Query(`SELECT * FROM comments`)
+	rows, err := r.db.Query(`SELECT c.id_post, c.content, c.user_id, u.login, u.photo, u.full_name
+	FROM comments c
+         JOIN user_profiles u ON c.user_id = u.id
+	WHERE c.id_post = $1 `, idPost)
+
 	if err != nil {
 		return commets, err
 	}
 	defer rows.Close()
+
 	for rows.Next() {
 		var comm models.Comments
 
-		if err := rows.Scan(&comm.Id, &comm.User_id, &comm.Content, &comm.Date_created, &comm.Id_post_on_comment); err != nil {
+		if err := rows.Scan(&comm.Id_post, &comm.Content, &comm.User_id, &comm.Login, &comm.Photo, &comm.FullName); err != nil {
 			return commets, err
 		}
 		commets = append(commets, comm)
 	}
+
 	if err := rows.Err(); err != nil {
 		return commets, err
 	}
@@ -292,39 +298,33 @@ func (r RepositoryImpl) ChangeComment(comment models.Comments) (bool, error) {
 
 }
 
-func (r RepositoryImpl) Subscribe(UserId string, Subscriber int) (bool, error) {
-	var exist bool
-
-	qr := r.db.QueryRow(`SELECT exists(SELECT 1 FROM subscribe where subscriber_id=$2 AND subscribed_to_id=$2)`, UserId, Subscriber)
-	if err := qr.Err(); err != nil {
-		return false, err
-	}
-	if exist {
-		return false, nil
-	}
-	_, err := r.db.Exec(`INSERT into subscribe (subscriber_id,subscribed_to_id, date_subscribed )
-		values ($1, $2, $3)`,
-		UserId, Subscriber, date)
-
-	return err == nil, err
-
-}
-func (r RepositoryImpl) UnSubscribe(UserId string, Subscriber int) error {
-	qr, err := r.db.Query(`DELETE FROM subscribe WHERE subscriber_id=$1 and subscriber_id=$2`, UserId, Subscriber)
-	if err != nil {
-		return err
-	}
-	print(qr)
-	return err
-}
-
-func (r RepositoryImpl) IsSubscribe(UserId string, Subscriber int) (error, bool) {
-	qr := r.db.QueryRow(`SELECT EXISTS(SELECT 1 FROM subscribe WHERE subscriber_id = $1 AND subscribed_to_id = $2)`, Subscriber, UserId)
+func (r RepositoryImpl) checkIfSubscribed(userID int, targetID string) bool {
 	var exists bool
-	err := qr.Scan(&exists)
+
+	err := r.db.QueryRow(`SELECT EXISTS (
+        SELECT 1 FROM subscribe WHERE subscriber_id=$1 AND subscribed_to_id=$2
+    )`, userID, targetID).Scan(&exists)
 	if err != nil {
-		return err, false
+		log.Println("Ошибка при проверке подписки:", err)
+		return false
 	}
-	println(exists)
-	return err, exists
+	return exists
+}
+
+func (r RepositoryImpl) ToggleSub(userID int, targetID string) bool {
+	subscribed := r.checkIfSubscribed(userID, targetID)
+
+	if subscribed {
+		_, err := r.db.Exec(`DELETE FROM subscribe WHERE subscriber_id=$1 AND subscribed_to_id=$2`, userID, targetID)
+		if err != nil {
+			log.Println("Ошибка при отписке:", err)
+		}
+		return false
+	} else {
+		_, err := r.db.Exec(`INSERT INTO subscribe (subscriber_id, subscribed_to_id) VALUES ($1, $2)`, userID, targetID)
+		if err != nil {
+			log.Println("Ошибка при подписке:", err)
+		}
+		return true
+	}
 }

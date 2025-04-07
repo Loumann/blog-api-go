@@ -28,7 +28,7 @@ func (c Controller) CreatePost(context *gin.Context) {
 
 func (c Controller) GetPosts(context *gin.Context) {
 	page := context.DefaultQuery("page", "1")
-	limit := context.DefaultQuery("limit", "10")
+	limit := context.DefaultQuery("limit", "4")
 	userId := context.DefaultQuery("own", "false")
 	own, err := strconv.ParseBool(userId)
 	if err != nil {

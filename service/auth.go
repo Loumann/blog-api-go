@@ -22,10 +22,6 @@ func (s *Services) GetProfileUserForLogin(login string) ([]models.User, int, err
 
 }
 
-func (s *Services) Subscribe(Subscribe string, UserId int) (bool, error) {
-	return s.Repository.Subscribe(Subscribe, UserId)
-}
-
-func (s *Services) IsSubscribe(UserId string, Subscriber int) (error, bool) {
-	return s.Repository.IsSubscribe(UserId, Subscriber)
+func (s *Services) ToggleSub(userID int, targetID string) bool {
+	return s.Repository.ToggleSub(userID, targetID)
 }

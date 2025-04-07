@@ -12,11 +12,10 @@ type Service interface {
 	GetProfileUserForLogin(login string) ([]models.User, int, error)
 	GetAllUsers() ([]models.User, error)
 	GetIdPost(userId int) (int, error)
-	GetComments() ([]models.Comments, error)
+	GetComments(idPost int) ([]models.Comments, error)
 	GetProfileUser(UserID int) (models.User, int, error)
 
-	Subscribe(UserId string, Subscriber int) (bool, error)
-	IsSubscribe(UserId string, Subscriber int) (error, bool)
+	ToggleSub(userID int, targetID string) bool
 
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 

@@ -14,32 +14,12 @@ let page = 1;
 const postsContainer = document.getElementById('posts-container');
 const loadingIndicator = document.getElementById('loading');
 
-
-function renderComments(comments) {
-    const commentsSection = document.getElementById("comments-section");
-    commentsSection.innerHTML = "";
-
-    comments.forEach(comment => {
-        const commentDiv = document.createElement("div");
-        commentDiv.classList.add("comment");
-        commentDiv.style.color = "red";
-        commentDiv.innerHTML = `
-            <p><strong>Пользователь ${comment.user_id}:</strong></p>
-            <p>${comment.content}</p>
-            <p><em>Создано: ${formatDate(comment.date_created)}</em></p>
-        `;
-
-        commentsSection.appendChild(commentDiv);
-    });
-}
-
-
-
 function loadPosts() {
     fetch(`/post/?page=${page}`)
         .then(response => response.json())
         .then(data => {
             const posts = data.posts;
+
             posts.forEach(post => {
                 const postElement = document.createElement('div');
                 postElement.classList.add('post');
@@ -50,14 +30,14 @@ function loadPosts() {
 
                 let postContent = `
                 <div class="post-header">
-                   <img src="${post.photo}" >
-                   <div class="post-user-info">
-                       <span class="fullname">${post.fullname}</span>
-                       <span class="login">@${post.login}</span>
-                   </div>
-               </div>
-               <h3>${post.theme}</h3>
-               <p class="short-text">${shortText}${isLong ? '...' : ''}</p>`;
+                    <img src="${post.photo}" >
+                    <div class="post-user-info">
+                        <span class="fullname">${post.fullname}</span>
+                        <span class="login">@${post.login}</span>
+                    </div>
+                </div>
+                <h3>${post.theme}</h3>
+                <p class="short-text">${shortText}${isLong ? '...' : ''}</p>`;
 
                 if (isLong) {
                     postContent += `
@@ -65,7 +45,10 @@ function loadPosts() {
                         <button class="toggle-btn">Показать все</button>`;
                 }
 
-                postContent += `<p class="time">${formattedDate}</p>`;
+                postContent += `
+                    <p class="time">${formattedDate}</p>
+                    <div class="comments-section" id="comments-${post.id_post}">Загрузка комментариев...</div>
+                `;
 
                 postElement.innerHTML = postContent;
                 postsContainer.appendChild(postElement);
@@ -76,17 +59,44 @@ function loadPosts() {
                     const shortTextEl = postElement.querySelector(".short-text");
 
                     toggleBtn.addEventListener("click", function () {
-                        if (fullText.style.display === "none") {
-                            fullText.style.display = "block";
-                            shortTextEl.style.display = "none";
-                            toggleBtn.textContent = "Скрыть";
-                        } else {
-                            fullText.style.display = "none";
-                            shortTextEl.style.display = "block";
-                            toggleBtn.textContent = "Показать все";
-                        }
+                        const showAll = fullText.style.display === "none";
+                        fullText.style.display = showAll ? "block" : "none";
+                        shortTextEl.style.display = showAll ? "none" : "block";
+                        toggleBtn.textContent = showAll ? "Скрыть" : "Показать все";
                     });
                 }
+
+
+                fetch(`/comment?post_id=${post.id_post}`)
+                    .then(res => res.json())
+                    .then(comments => {
+                        const commentsContainer = document.getElementById(`comments-${post.id_post}`);
+                        commentsContainer.innerHTML = "";
+
+                        if (comments.length === 0) {
+                            commentsContainer.innerHTML = "<p>Комментариев пока нет.</p>";
+                            return;
+                        }
+
+                        comments.forEach(comment => {
+                            const commentDiv = document.createElement("div");
+                            commentDiv.classList.add("comment");
+                            commentDiv.innerHTML = `
+                                <div class="comment-user-head">
+                                <img class="comment-photo-user" src=${comment.photo}>
+                                <p><strong>@ ${comment.login}</strong></p>
+                                </div>
+                               
+                                <p>${comment.content}</p>
+                                <p class="comment-date-create"><em>Создано: ${formatDate(comment.date_create)}</em></p>
+                            `;
+                            commentsContainer.appendChild(commentDiv);
+                        });
+                    })
+                    .catch(err => {
+                        const commentsContainer = document.getElementById(`comments-${post.id_post}`);
+                        console.error(err);
+                    });
             });
 
             page++;
@@ -97,6 +107,7 @@ function loadPosts() {
             loadingIndicator.style.display = 'none';
         });
 }
+
 
 const observer = new IntersectionObserver((entries) => {
     const lastPost = entries[0];

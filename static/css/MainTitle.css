@@ -207,11 +207,7 @@ main {
     box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
 }
 
-.post-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
+
 .post-header img {
     width: 40px;
     height: 40px;
@@ -400,11 +396,10 @@ p.time {
     height: auto;
 }
 
-
 .post-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .post-header img {
@@ -414,6 +409,18 @@ p.time {
     margin-right: 10px;
 }
 
+.comment-photo-user {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover; /* чтобы не было искажений */
+}
+
+.comment-user-head{
+    display: flex;
+
+}
 .post-user-info {
     display: flex;
     flex-direction: column;
@@ -506,4 +513,67 @@ button {
     float: right;
     font-size: 28px;
     cursor: pointer;
+}
+
+
+#userList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    max-width: 600px;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    flex-direction: column
+}
+
+.user-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.user-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+}
+
+.user-item h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.user-item p {
+    margin: 4px 0;
+    color: #444;
+}
+
+.subscribeButton {
+    margin-left: auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.subscribeButton:hover {
+    background-color: #0056b3;
 }

@@ -1,22 +1,11 @@
 package controller
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 func (c *Controller) InitRouters() *gin.Engine {
 	router := gin.Default()
-
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},                   // Разрешенные домены
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, // Разрешенные HTTP-методы
-		AllowHeaders:     []string{"Content-Type", "Authorization"},           // Разрешенные заголовки
-		ExposeHeaders:    []string{"Content-Length"},                          // Заголовки, доступные клиенту
-		AllowCredentials: true,                                                // Разрешить отправку cookies
-		MaxAge:           12 * time.Hour,                                      // Кэширование CORS настроек
-	}))
 
 	router.LoadHTMLGlob("static/template/*")
 	router.Static("/static", "./static")
@@ -41,7 +30,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 	subscribe := router.Group("/subscribe")
 	{
 		subscribe.POST("/:userId", c.Subscribe)
-		//subscribe.DELETE("/:userId", c.Unsubscribe)
+
 	}
 
 	comment := router.Group("/comment")

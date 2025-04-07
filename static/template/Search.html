@@ -6,8 +6,8 @@
     <title>Новости</title>
     <link rel="stylesheet" href="static/css/MainTitle.css">
     <script src="static/js/script.js"></script>
+    <script src="static/js/Search.js"></script>
     <style>
-        /* Добавь стили для списка пользователей */
         #userList {
             list-style: none;
             padding: 0;
@@ -59,64 +59,7 @@
 <main>
     <ul id="userList"></ul>
 
-    <script>
-        const searchInput = document.getElementById("searchInput");
-        const userList = document.getElementById("userList");
 
-        async function searchUsers(login) {
-
-
-            if (!login) {
-                userList.innerHTML = "";
-                return;
-            }
-
-            try {
-                const response = await fetch(`/users/${login}`);
-                const data = await response.json();
-                console.log(data);
-                userList.innerHTML = "";
-
-                data.forEach(user => {
-
-                    const li = document.getElementById("userList")
-                    console.log(userList);
-                    li.innerHTML += `
-                <div>
-                    <img src="${user.photo}" alt="Фото профиля" style="width: 50px; height: 50px; border-radius: 50%;">
-                    <h3>${user.full_name}</h3>
-                    <p><strong>Логин:</strong> ${user.login}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                </div>
-                <button onclick="subscribeUser(${user.id})" class="subscribeButton">Подписаться</button>
-            `
-                })
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }
-        async function subscribeUser(userId) {
-            try {
-                const response = await fetch(`http://localhost:8080/subscribe/${userId}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId })
-                });
-
-                if (response.ok) {
-                    alert("Вы подписались!");
-                } else {
-                    alert("Ошибка подписки.");
-                }
-            } catch (error) {
-                console.error("Ошибка подписки:", error);
-            }
-        }
-
-        searchInput.addEventListener("input", (e) => searchUsers(e.target.value));
-    </script>
 </main>
 
 </body>

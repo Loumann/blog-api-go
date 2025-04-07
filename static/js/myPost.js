@@ -116,8 +116,9 @@ function deletePost(postId) {
             }
         })
         .catch(error => {
-            alert(error.message);
+            console.log(error);
         });
+        location.reload();
 }
 
 

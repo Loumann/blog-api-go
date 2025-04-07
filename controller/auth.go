@@ -108,6 +108,7 @@ func (c Controller) GetProfile(context *gin.Context) {
 
 	context.JSON(http.StatusOK, user)
 }
+
 func (c Controller) GetProfileFromLogin(context *gin.Context) {
 	login := context.Param("login")
 	user, _, err := c.Services.GetProfileUserForLogin(login)
@@ -123,21 +124,15 @@ func (c Controller) Subscribe(context *gin.Context) {
 	userId := context.Param("userId")
 	claims := &models.Claims{}
 	c.ParserJWT(context, claims)
-	qr, err := c.Services.Subscribe(userId, claims.UserId)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-	print(qr)
-}
 
-//func (c Controller) Unsubscribe(context *gin.Context) {
-//	userId := context.Param("userId")
-//	claims := &models.Claims{}
-//	c.ParserJWT(context, claims)
-//	err := c.Services.Unsubscribe(userId, claims.UserId)
-//
-//}
+	err := c.Services.ToggleSub(claims.UserId, userId)
+	if err {
+		context.JSON(http.StatusInternalServerError, gin.H{"status": err})
+	} else {
+		context.JSON(http.StatusOK, gin.H{"status": err})
+	}
+
+}
 
 func (c Controller) GenerateJWT(userId int) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
