@@ -134,6 +134,21 @@ func (c Controller) Subscribe(context *gin.Context) {
 
 }
 
+func (c Controller) CheckSubscribe(context *gin.Context) {
+	userId := context.Param("userId")
+	claims := &models.Claims{}
+	c.ParserJWT(context, claims)
+	res := c.Services.CheckIfSubscribed(claims.UserId, userId)
+	if !res {
+		context.JSON(http.StatusBadRequest, gin.H{"message": false})
+		return
+
+	} else {
+		context.JSON(http.StatusOK, gin.H{"message": true})
+	}
+
+}
+
 func (c Controller) GenerateJWT(userId int) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 

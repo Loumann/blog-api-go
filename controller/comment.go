@@ -2,7 +2,6 @@ package controller
 
 import (
 	"blog-api-go/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -27,22 +26,15 @@ func (c Controller) ChangeComment(context *gin.Context) {
 }
 
 func (c *Controller) CreateComment(context *gin.Context) {
+
+	postIDKey := context.Param("postId")
+	id, err := strconv.Atoi(postIDKey)
+
 	var input models.Comments
 	claims := &models.Claims{}
-
 	c.ParserJWT(context, claims)
-	if err := context.ShouldBindJSON(&input); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err})
-		fmt.Printf(err.Error())
-	}
 
-	postId, err := c.Services.GetIdPost(input.Id_post)
-	if err != nil {
-		context.AbortWithStatusJSON(500, gin.H{"error": "post not exist"})
-		return
-	}
-
-	com, err := c.Services.CreateComment(claims.UserId, postId, input)
+	com, err := c.Services.CreateComment(claims.UserId, id, input)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return

@@ -27,6 +27,7 @@ type Repository interface {
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
 	ToggleSub(userID int, targetID string) bool
+	CheckIfSubscribed(userID int, targetID string) bool
 
 	CreatePost(UserID int, post models.Post) error
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
@@ -200,7 +201,7 @@ func (r RepositoryImpl) GetPosts(userID, page, limit int, own bool) ([]models.Po
 
 func (r RepositoryImpl) CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error) {
 
-	row, err := r.db.Query(`insert into comments(user_id, content, date_created, id_post_on_comment) 
+	row, err := r.db.Query(`insert into comments(user_id, content, date_create, id_post) 
 	values ($1,$2,$3,$4)`,
 		userId, comment.Content, date, postId)
 	if row != nil {
@@ -245,7 +246,7 @@ func (r RepositoryImpl) SignUp(user models.User, hashPass models.Credentials) er
 
 func (r RepositoryImpl) DeletePost(postId int) error {
 
-	_, err := r.db.Exec(`DELETE FROM comments WHERE id_post_on_comment = $1`, postId)
+	_, err := r.db.Exec(`DELETE FROM comments WHERE id_post = $1`, postId)
 	if err != nil {
 		return err
 	}
@@ -298,7 +299,7 @@ func (r RepositoryImpl) ChangeComment(comment models.Comments) (bool, error) {
 
 }
 
-func (r RepositoryImpl) checkIfSubscribed(userID int, targetID string) bool {
+func (r RepositoryImpl) CheckIfSubscribed(userID int, targetID string) bool {
 	var exists bool
 
 	err := r.db.QueryRow(`SELECT EXISTS (
@@ -312,7 +313,7 @@ func (r RepositoryImpl) checkIfSubscribed(userID int, targetID string) bool {
 }
 
 func (r RepositoryImpl) ToggleSub(userID int, targetID string) bool {
-	subscribed := r.checkIfSubscribed(userID, targetID)
+	subscribed := r.CheckIfSubscribed(userID, targetID)
 
 	if subscribed {
 		_, err := r.db.Exec(`DELETE FROM subscribe WHERE subscriber_id=$1 AND subscribed_to_id=$2`, userID, targetID)

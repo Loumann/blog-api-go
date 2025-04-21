@@ -41,9 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (error) {
             const userItem = document.createElement("div");
-            userItem.innerHTML = ` <p>Пользователь не найлен</p>`;
+            userItem.innerHTML = ` <p>Пользователь не найден</p>`;
         }
     }
+
+
 
     async function subscribeUser(userId, button) {
         try {
@@ -54,17 +56,39 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (response.ok) {
-                button.textContent = button.textContent === "Подписаться" ? "Отписаться" : "Подписаться";
-                alert("Подписка изменена!");
+                alert("Вы отписались!");
             } else {
-                alert("Произошла ошибка при подписке.");
+                button.textContent = button.textContent === "Подписаться" ? "Отписаться" : "Подписаться";
+                alert("Вы подписались на пользователя");
             }
         } catch (error) {
             console.error("Ошибка подписки:", error);
         }
     }
 
-    // 👇 Только по Enter
+    async function check_subscribe(userId, button) {
+        try {
+            const response = await fetch(`http://localhost:8080/check-subscribe/${userId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+
+            })
+            if (response.ok) {
+                button.textContent = button.textContent === "Отписаться"
+            } else {
+                button.textContent = button.textContent === "Подписаться"
+            }
+
+        }
+        catch(error) {
+            console.error(error);
+        }
+    }
+
+
+
     searchInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             e.preventDefault();

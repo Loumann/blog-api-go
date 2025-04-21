@@ -1,4 +1,3 @@
-
 function Sign_In() {
     let xhr = new XMLHttpRequest();
     let log = document.getElementById("login");
@@ -128,42 +127,6 @@ function loadProfile() {
             console.error("Ошибка загрузки профиля:", error);
         });
 }
-
-function renderComments(comments) {
-    const commentsSection = document.getElementById("comments-section");
-    commentsSection.innerHTML = "";
-
-    comments.forEach(comment => {
-        const commentDiv = document.createElement("div");
-        commentDiv.classList.add("comment");
-        commentDiv.style.color = "red";
-        commentDiv.innerHTML = `
-            <p><strong>Пользователь ${comment.user_id}:</strong></p>
-            <p>${comment.content}</p>
-            <p><em>Создано: ${formatDate(comment.date_created)}</em></p>
-        `;
-
-        commentsSection.appendChild(commentDiv);
-    });
-}
-
-function loadPosts() {
-    fetch("/post", { method: "GET" })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Ошибка сети: " + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Данные получены:", data);
-            renderComments(data);
-        })
-        .catch(error => {
-            console.error("Ошибка:", error);
-        });
-}
-
 
 function createPost() {
     let titleInput = document.getElementById("postTitle");
