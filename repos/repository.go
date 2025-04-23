@@ -27,7 +27,7 @@ type Repository interface {
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 
 	ToggleSub(userID int, targetID string) bool
-	CheckIfSubscribed(userID int, targetID string) bool
+	CheckIfSubscribed(userID int, targetID string) (bool, error)
 
 	CreatePost(UserID int, post models.Post) error
 	CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error)
@@ -299,7 +299,7 @@ func (r RepositoryImpl) ChangeComment(comment models.Comments) (bool, error) {
 
 }
 
-func (r RepositoryImpl) CheckIfSubscribed(userID int, targetID string) bool {
+func (r RepositoryImpl) CheckIfSubscribed(userID int, targetID string) (bool, error) {
 	var exists bool
 
 	err := r.db.QueryRow(`SELECT EXISTS (
@@ -307,13 +307,16 @@ func (r RepositoryImpl) CheckIfSubscribed(userID int, targetID string) bool {
     )`, userID, targetID).Scan(&exists)
 	if err != nil {
 		log.Println("Ошибка при проверке подписки:", err)
-		return false
+		return false, err
 	}
-	return exists
+	return exists, err
 }
 
 func (r RepositoryImpl) ToggleSub(userID int, targetID string) bool {
-	subscribed := r.CheckIfSubscribed(userID, targetID)
+	subscribed, err := r.CheckIfSubscribed(userID, targetID)
+	if err != nil {
+		return false
+	}
 
 	if subscribed {
 		_, err := r.db.Exec(`DELETE FROM subscribe WHERE subscriber_id=$1 AND subscribed_to_id=$2`, userID, targetID)

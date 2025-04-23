@@ -12,10 +12,6 @@ import (
 
 var jwtSecret = []byte("my_secret_key")
 
-func (c Controller) SaveAvatar(context *gin.Context) {
-
-}
-
 func (c Controller) SignUp(context *gin.Context) {
 
 	var input models.User
@@ -134,19 +130,22 @@ func (c Controller) Subscribe(context *gin.Context) {
 
 }
 
-func (c Controller) CheckSubscribe(context *gin.Context) {
-	userId := context.Param("userId")
-	claims := &models.Claims{}
-	c.ParserJWT(context, claims)
-	res := c.Services.CheckIfSubscribed(claims.UserId, userId)
-	if !res {
-		context.JSON(http.StatusBadRequest, gin.H{"message": false})
-		return
+func (c *Controller) CheckSubscribe(ctx *gin.Context) {
+	userIdParam := ctx.Param("userId")
 
-	} else {
-		context.JSON(http.StatusOK, gin.H{"message": true})
+	claims := &models.Claims{}
+	if err := c.ParserJWT(ctx, claims); err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
 	}
 
+	subscribed, err := c.Services.CheckIfSubscribed(claims.UserId, userIdParam)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "server error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"subscribed": subscribed})
 }
 
 func (c Controller) GenerateJWT(userId int) (string, error) {
@@ -167,24 +166,25 @@ func (c Controller) GenerateJWT(userId int) (string, error) {
 
 	return tokenString, nil
 }
-func (c Controller) ParserJWT(context *gin.Context, claims *models.Claims) {
+func (c Controller) ParserJWT(context *gin.Context, claims *models.Claims) error {
 	tokenString, err := context.Cookie("token")
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
+		return err
 	}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("my_secret_key"), nil // Ваш секретный ключ
+		return []byte("my_secret_key"), nil
 	})
 
 	if err != nil || !token.Valid {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
+		return err
 	}
 
 	if claims.UserId == 0 {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
-		return
+		return err
 	}
+	return err
 }

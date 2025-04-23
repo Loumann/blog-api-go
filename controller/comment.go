@@ -26,13 +26,21 @@ func (c Controller) ChangeComment(context *gin.Context) {
 }
 
 func (c *Controller) CreateComment(context *gin.Context) {
+	var input models.Comments
 
 	postIDKey := context.Param("postId")
 	id, err := strconv.Atoi(postIDKey)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
 
-	var input models.Comments
 	claims := &models.Claims{}
 	c.ParserJWT(context, claims)
+
+	if err := context.ShouldBindJSON(&input); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err})
+	}
 
 	com, err := c.Services.CreateComment(claims.UserId, id, input)
 	if err != nil {

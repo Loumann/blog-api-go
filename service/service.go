@@ -16,7 +16,7 @@ type Service interface {
 	GetProfileUser(UserID int) (models.User, int, error)
 
 	ToggleSub(userID int, targetID string) bool
-	CheckIfSubscribed(userID int, targetID string) bool
+	CheckIfSubscribed(userID int, targetID string) (bool, error)
 
 	GetPosts(userID, page, limit int, own bool) ([]models.Post, error)
 

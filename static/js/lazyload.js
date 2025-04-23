@@ -159,13 +159,13 @@ async function submitComment(postId, commentText, formElement) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ text: commentText })
+        body: JSON.stringify({ content: commentText })
+
     });
 
     if (response.ok) {
-        alert('Комментарий отправлен!');
         formElement.querySelector('.comment-text').value = '';
-        location.reload();
+        location.reload()
     } else {
         alert('Ошибка при отправке комментария');
     }

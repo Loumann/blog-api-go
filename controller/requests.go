@@ -18,6 +18,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.GET("/search", c.SearchPage)
 
 	router.GET("/users", c.GetProfile)
+	router.GET("/check-sub/:userId", c.CheckSubscribe)
 
 	post := router.Group("/post")
 	{
@@ -26,8 +27,6 @@ func (c *Controller) InitRouters() *gin.Engine {
 		post.DELETE("/:postId", c.DeletePost)
 		post.PUT("/", c.UpdatePost)
 	}
-
-	router.GET("/check-sub/:userId", c.CheckSubscribe)
 
 	subscribe := router.Group("/subscribe")
 	{
