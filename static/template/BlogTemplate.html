@@ -22,7 +22,7 @@
         <a href="/search">Поиск</a>
         <a href="#">Настройки</a>
         <a href="#">Помощь</a>
-        <a href="#">Выйти</a>
+        <a href="/"> Выйти</a>
     </div>
 
     <button content="Создать пост" onclick="openModal()">Постнуть</button>
@@ -32,6 +32,21 @@
 </header>
 
 <main>
+
+    <div class="modal-overlay" id="modalOverlayHelp">
+        <div class="modal">
+            <h2>Помощь</h2>
+            <button onclick="closeModal()">Закрыть</button>
+            <p>Это сайт аналог "Facebook" или "Twitter", как для вас удобно :)</p>
+            <p>Здесь вы можете оставить свой пост, подписываться на пользователей, и комментировать посты других пользователей</p>
+
+        </div>
+    </div>
+
+
+
+
+
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">

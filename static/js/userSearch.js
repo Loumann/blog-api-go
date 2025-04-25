@@ -33,8 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
-
     window.onload = function() {
         document.getElementById('subscribeButton').addEventListener('click', renderUsers);
 
@@ -44,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     };
-
 
 
     searchInput.addEventListener("input", renderUsers);

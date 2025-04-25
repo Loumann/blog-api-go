@@ -5,9 +5,9 @@ import "time"
 type Comments struct {
 	Id           int       `json:"id_comment" db:"id"`
 	User_id      int       `json:"user_id" db:"user_id"`
-	Date_created time.Time `json:"date_create" db:"date_create"`
 	Id_post      int       `json:"id_post" db:"id_post"`
 	Content      string    `json:"content" db:"content"`
+	Date_created time.Time `json:"date_create" db:"date_create"`
 	Login        string    `json:"login" db:"login"`
 	FullName     string    `json:"full_name" db:"full_name"`
 	Photo        string    `json:"photo" db:"photo"`

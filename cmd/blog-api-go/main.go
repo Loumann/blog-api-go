@@ -2,10 +2,10 @@ package main
 
 import (
 	"blog-api-go/config"
-	"blog-api-go/controller"
-	"blog-api-go/models"
-	"blog-api-go/repos"
-	"blog-api-go/service"
+	"blog-api-go/internal/controller"
+	"blog-api-go/internal/models"
+	repos2 "blog-api-go/internal/repos"
+	"blog-api-go/internal/service"
 	"fmt"
 	"log"
 )
@@ -16,9 +16,9 @@ func main() {
 
 	fmt.Println("envs: ", envs, cfg)
 
-	db := repos.NewBusinessDatabase(cfg, envs)
+	db := repos2.NewBusinessDatabase(cfg, envs)
 
-	Repos := repos.NewRepository(db)
+	Repos := repos2.NewRepository(db)
 	Service := service.NewService(Repos)
 	Controller := controller.NewController(Service)
 

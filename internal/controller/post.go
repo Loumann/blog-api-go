@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"blog-api-go/models"
+	models2 "blog-api-go/internal/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -10,8 +10,8 @@ import (
 )
 
 func (c Controller) CreatePost(context *gin.Context) {
-	var Post models.Post
-	claims := &models.Claims{}
+	var Post models2.Post
+	claims := &models2.Claims{}
 	c.ParserJWT(context, claims)
 	if err := context.ShouldBindJSON(&Post); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -23,10 +23,11 @@ func (c Controller) CreatePost(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		log.Fatal("error getting posts", err.Error())
 	}
-	context.AbortWithStatusJSON(http.StatusOK, gin.H{"create new post": Post})
+	context.AbortWithStatusJSON(http.StatusOK, gin.H{"status": "post created"})
 }
 
 func (c Controller) GetPosts(context *gin.Context) {
+
 	page := context.DefaultQuery("page", "1")
 	limit := context.DefaultQuery("limit", "4")
 	userId := context.DefaultQuery("own", "false")
@@ -52,7 +53,7 @@ func (c Controller) GetPosts(context *gin.Context) {
 		return
 	}
 
-	var claims models.Claims
+	var claims models2.Claims
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte("my_secret_key"), nil
 	})
@@ -90,7 +91,7 @@ func (c Controller) DeletePost(context *gin.Context) {
 }
 
 func (c Controller) UpdatePost(context *gin.Context) {
-	var post models.Post
+	var post models2.Post
 
 	if err := context.ShouldBindJSON(&post); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -1,10 +1,8 @@
 package service
 
-import "blog-api-go/models"
-
-func (s *Services) GetAllUsers() ([]models.User, error) {
-	return s.Repository.GetAllUsers()
-}
+import (
+	"blog-api-go/internal/models"
+)
 
 func (s *Services) SignIn(login string) ([]byte, int, error) {
 	return s.Repository.SignIn(login)
@@ -19,13 +17,7 @@ func (s *Services) GetProfileUser(UserId int) (models.User, int, error) {
 }
 func (s *Services) GetProfileUserForLogin(login string) ([]models.User, int, error) {
 	return s.Repository.GetProfileUserForLogin(login)
-
 }
-
-func (s *Services) ToggleSub(userID int, targetID string) bool {
-	return s.Repository.ToggleSub(userID, targetID)
-}
-
-func (s *Services) CheckIfSubscribed(userID int, targetID string) (bool, error) {
-	return s.Repository.CheckIfSubscribed(userID, targetID)
+func (s *Services) GetAllUsers() ([]models.User, error) {
+	return s.Repository.GetAllUsers()
 }

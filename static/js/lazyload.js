@@ -1,6 +1,8 @@
 function formatDate(isoString) {
     const date = new Date(isoString);
 
+
+
     return date.toLocaleString("ru-RU", {
         day: "numeric",
         month: "long",
@@ -55,7 +57,6 @@ function loadPosts() {
                         <button type="submit" class="comment-submit">Отправить</button>
                       </div>
                     </form>
-                    <div class="comments-section" id="comments-${post.id_post}">Загрузка комментариев...</div>
                 `;
 
                 postElement.innerHTML = postContent;
@@ -113,7 +114,7 @@ function loadPosts() {
                                 </div>
                                
                                 <p>${comment.content}</p>
-                                <p class="comment-date-create"><em>Создано: ${formatDate(comment.date_create)}</em></p>
+                                <p class="comment-date-create"><em>${formatDate(comment.date_create)}</em></p>
                             `;
                             commentsContainer.appendChild(commentDiv);
                         });
@@ -132,7 +133,6 @@ function loadPosts() {
             loadingIndicator.style.display = 'none';
         });
 }
-
 
 const observer = new IntersectionObserver((entries) => {
     const lastPost = entries[0];

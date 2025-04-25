@@ -22,8 +22,8 @@ func (c *Controller) InitRouters() *gin.Engine {
 
 	post := router.Group("/post")
 	{
-		post.GET("/", c.GetPosts)
 		post.POST("/", c.CreatePost)
+		post.GET("/", c.GetPosts)
 		post.DELETE("/:postId", c.DeletePost)
 		post.PUT("/", c.UpdatePost)
 	}

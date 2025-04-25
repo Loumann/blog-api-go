@@ -1,8 +1,10 @@
 package service
 
-import "blog-api-go/models"
+import (
+	"blog-api-go/internal/models"
+)
 
-func (s *Services) CreatePost(UserID int, post models.Post) error {
+func (s Services) CreatePost(UserID int, post models.Post) error {
 	return s.Repository.CreatePost(UserID, post)
 }
 

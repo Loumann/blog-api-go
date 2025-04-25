@@ -259,6 +259,10 @@ function toggleDropdown() {
 function openModal() {
     document.getElementById("modalOverlay").style.display = "flex";
 }
+function openModalHelp() {
+    document.getElementById("modalOverlayHelp").style.display = "flex";
+}
+
 function closeModal() {
 
     document.getElementById("modalOverlay").style.display = "none";

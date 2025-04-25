@@ -2,7 +2,7 @@ package repos
 
 import (
 	"blog-api-go/config"
-	"blog-api-go/models"
+	"blog-api-go/internal/models"
 	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"

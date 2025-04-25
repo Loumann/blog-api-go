@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"blog-api-go/service"
+	"blog-api-go/internal/service"
 )
 
 type Controller struct {
-	Services service.Service
+	Services *service.Services
 }
 
 func NewController(userService *service.Services) *Controller {

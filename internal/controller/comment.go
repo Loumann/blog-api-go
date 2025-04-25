@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"blog-api-go/models"
+	models2 "blog-api-go/internal/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 func (c Controller) ChangeComment(context *gin.Context) {
-	var comment models.Comments
+	var comment models2.Comments
 	err := context.ShouldBindJSON(&comment)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -25,8 +25,8 @@ func (c Controller) ChangeComment(context *gin.Context) {
 
 }
 
-func (c *Controller) CreateComment(context *gin.Context) {
-	var input models.Comments
+func (c Controller) CreateComment(context *gin.Context) {
+	var input models2.Comments
 
 	postIDKey := context.Param("postId")
 	id, err := strconv.Atoi(postIDKey)
@@ -35,7 +35,7 @@ func (c *Controller) CreateComment(context *gin.Context) {
 		return
 	}
 
-	claims := &models.Claims{}
+	claims := &models2.Claims{}
 	c.ParserJWT(context, claims)
 
 	if err := context.ShouldBindJSON(&input); err != nil {
@@ -51,7 +51,7 @@ func (c *Controller) CreateComment(context *gin.Context) {
 
 }
 
-func (c *Controller) GetComments(context *gin.Context) {
+func (c Controller) GetComments(context *gin.Context) {
 	postIdStr := context.Query("post_id")
 	idPost, err := strconv.Atoi(postIdStr)
 	if err != nil {
