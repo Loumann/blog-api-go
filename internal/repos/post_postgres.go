@@ -4,6 +4,7 @@ import (
 	"blog-api-go/internal/models"
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 func (r RepositoryImpl) GetIdPost(postId int) (int, error) {
@@ -77,6 +78,7 @@ func (r RepositoryImpl) GetPosts(userID, page, limit int, own bool) ([]models.Po
 }
 
 func (r RepositoryImpl) CreatePost(UserID int, post models.Post) error {
+	var date = time.Now().Format("2006-01-02 15:04:05")
 
 	row, err := r.db.Query(`INSERT INTO post (id_user_create_post, theme, content_post, date_create) 
 	VALUES ($1, $2,$3,$4)`,
@@ -103,6 +105,7 @@ func (r RepositoryImpl) DeletePost(postId int) error {
 }
 
 func (r RepositoryImpl) ChangePost(post models.Post) (bool, error) {
+	var date = time.Now().Format("2006-01-02 15:04:05")
 
 	var count int
 	err := r.db.QueryRow(`select count(*) from post where id_post=$1`, post.Id_post).Scan(&count)

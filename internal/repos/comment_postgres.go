@@ -2,9 +2,11 @@ package repos
 
 import (
 	"blog-api-go/internal/models"
+	"time"
 )
 
 func (r RepositoryImpl) CreateComment(userId int, postId int, comment models.Comments) (models.Comments, error) {
+	var date = time.Now().Format("2006-01-02 15:04:05")
 
 	row, err := r.db.Query(`insert into comments(user_id, content, date_create, id_post) 
 	values ($1,$2,$3,$4)`,
@@ -48,6 +50,7 @@ func (r RepositoryImpl) DeleteComment(CommentId int) error {
 	return nil
 }
 func (r RepositoryImpl) ChangeComment(comment models.Comments) (bool, error) {
+	var date = time.Now().Format("2006-01-02 15:04:05")
 	var count int
 
 	err := r.db.QueryRow(`SELECT count(*) from comments where id=$1`, comment.Id).Scan(&count)

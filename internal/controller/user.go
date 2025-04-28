@@ -31,8 +31,8 @@ func (c Controller) SignUp(context *gin.Context) {
 
 	err = c.Services.SignUp(input, hashPass)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Fatal("Error signing up:", err)
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "login already exists"})
+		log.Println("Error signing up:", err)
 	} else {
 		context.AbortWithStatusJSON(http.StatusOK, gin.H{"message": "User added successfully"})
 	}

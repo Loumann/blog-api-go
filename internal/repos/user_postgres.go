@@ -56,7 +56,6 @@ func (r RepositoryImpl) GetProfileUserForLogin(login string) ([]models.User, int
 		users = append(users, user)
 	}
 
-	// Проверяем, есть ли найденные пользователи
 	if len(users) == 0 {
 		return nil, 0, fmt.Errorf("Пользователи с логином, содержащим '%s', не найдены", login)
 	}
@@ -76,13 +75,29 @@ func (r RepositoryImpl) SignIn(login string) ([]byte, int, error) {
 
 	return []byte(hashedPassword), userID, nil
 }
-func (r RepositoryImpl) SignUp(user models.User, hashPass models.Credentials) error {
 
-	row, err := r.db.Query(`INSERT INTO user_profiles (login, email, password, full_name,  photo) 
-	VALUES ($1, $2,$3,$4,$5)`,
-		user.Login, user.Email, hashPass.Password, user.FullNameUser, user.Photo)
-	if row != nil {
-		return err
+func (r RepositoryImpl) LoginCheck(login string) bool {
+	var exist bool
+
+	err := r.db.QueryRow(`SELECT EXISTS (SELECT 1 FROM user_profiles WHERE login = $1)`, login).Scan(&exist)
+	if err != nil {
+		return false
 	}
-	return err
+	return exist
+}
+
+func (r RepositoryImpl) SignUp(user models.User, hashPass models.Credentials) error {
+	exists := r.LoginCheck(user.Login)
+	if exists {
+		return fmt.Errorf("логин уже существует")
+	}
+
+	_, err := r.db.Exec(`INSERT INTO user_profiles (login, email, password, full_name, photo) 
+		VALUES ($1, $2, $3, $4, $5)`,
+		user.Login, user.Email, hashPass.Password, user.FullNameUser, user.Photo)
+	if err != nil {
+		return fmt.Errorf("ошибка при регистрации: %v", err)
+	}
+
+	return nil
 }

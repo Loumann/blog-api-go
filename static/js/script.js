@@ -16,12 +16,17 @@ function Sign_In() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var response = JSON.parse(xhr.responseText);
 
+            // Проверяем, если сервер возвращает токен
             if (response.token) {
                 localStorage.setItem("token", response.token);
 
-                loadProfile();
+                loadProfile();  // Функция для загрузки профиля пользователя
 
-                window.location.href = "/feed";
+                window.location.href = "/feed";  // Перенаправляем на страницу ленты
+            } else if (response.error && response.error === "login already exists") {
+                // Если логин уже существует, показываем соответствующее сообщение
+                document.getElementById("message").style.color = "red";
+                document.getElementById("message").innerText = "Этот логин уже существует!";
             } else {
                 document.getElementById("message").innerText = "Ошибка входа";
             }
@@ -33,6 +38,7 @@ function Sign_In() {
 
     console.log(json);
 }
+
 function signup() {
     const SIMPLE_EMAIL_REGEXP = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 
@@ -43,6 +49,9 @@ function signup() {
     const photo = document.getElementById("photo").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
     const errorMessage = document.getElementById("errorMessage");
+
+
+
 
     errorMessage.textContent = "";
     if (!login || !email || !full_name || !password)
@@ -74,6 +83,9 @@ function signup() {
         photo: photo
     };
 
+    if (!photo) {
+        user.photo = "static/PhotoBase/profile.png";
+    }
     fetch("/sign-up", {
         method: "POST",
         headers: {
@@ -83,7 +95,7 @@ function signup() {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error("Ошибка регистрации");
+                throw new Error("Логин уже занят");
             }
             return response.json();
         })
@@ -173,12 +185,10 @@ function createPost() {
         .then(data => {
             alert("Создание успешно!");
             window.location.reload();
-            titleInput.value = "";
-            contentInput.value = "";
             closeModal()
         })
         .catch(error => {
-            alert(error.message);
+            console.log(error)
         });
 }
 

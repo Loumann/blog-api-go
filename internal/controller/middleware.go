@@ -19,7 +19,7 @@ func (c Controller) GenerateJWT(userId int) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte("my_secret_key")) // Замените на ваш секретный ключ
+	tokenString, err := token.SignedString([]byte("my_secret_key"))
 	if err != nil {
 		return "", err
 	}

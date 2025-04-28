@@ -3,10 +3,7 @@ package repos
 import (
 	models2 "blog-api-go/internal/models"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
-
-var date = time.Now().Format("2006-01-02 15:04:05")
 
 type RepositoryImpl struct {
 	db *sqlx.DB

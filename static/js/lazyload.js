@@ -4,12 +4,14 @@ function formatDate(isoString) {
 
 
     return date.toLocaleString("ru-RU", {
+        timeZone: "UTC",  // <-- добавил!
         day: "numeric",
         month: "long",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit"
     });
+
 }
 
 let page = 1;
@@ -50,14 +52,16 @@ function loadPosts() {
 
 
                 postContent += `
-                    <p class="time">${formattedDate}</p>
-                   <form class="comment-form" data-post-id="${post.id_post}">
-                      <div class="comment-box">
-                        <textarea class="comment-text" placeholder="Напиши комментарий..."></textarea>
-                        <button type="submit" class="comment-submit">Отправить</button>
-                      </div>
-                    </form>
-                `;
+    <div id="comments-${post.id_post}" class="comments-container"></div>
+    <p class="time">${formattedDate}</p>
+    <form class="comment-form" data-post-id="${post.id_post}">
+      <div class="comment-box">
+        <textarea class="comment-text" placeholder="Напиши комментарий..."></textarea>
+        <button type="submit" class="comment-submit">Отправить</button>
+      </div>
+    </form>
+`;
+
 
                 postElement.innerHTML = postContent;
                 postsContainer.appendChild(postElement);
@@ -174,4 +178,3 @@ async function submitComment(postId, commentText, formElement) {
 
 
 loadPosts();
-
