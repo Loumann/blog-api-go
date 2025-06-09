@@ -27,6 +27,7 @@ func (r RepositoryImpl) GetPosts(userID, page, limit int, own bool) ([]models.Po
 
 	if own == true {
 		rows, err = r.db.Query(`SELECT p.id_post, p.id_user_create_post, p.theme, p.content_post, p.date_create, 
+
                    u.full_name, u.photo, u.login, LENGTH(p.content_post) > 500 as is_long
             FROM post p 
             JOIN user_profiles u ON p.id_user_create_post = u.id 
@@ -119,4 +120,55 @@ func (r RepositoryImpl) ChangePost(post models.Post) (bool, error) {
 	_, err = r.db.Exec(`UPDATE post SET theme=$1, content_post=$2, date_create=$3 WHERE id_post=$4`,
 		post.Theme, post.Content_post, date, post.Id_post)
 	return true, err
+}
+
+func (r RepositoryImpl) GetSubscribedPosts(userID, page, limit int) ([]models.Post, error) {
+	var posts []models.Post
+	offset := (page - 1) * limit
+
+	var rows *sql.Rows
+	var err error
+
+	rows, err = r.db.Query(`
+            SELECT p.id_post, p.id_user_create_post, p.theme, p.content_post, p.date_create, 
+                   u.full_name, u.photo, u.login, LENGTH(p.content_post) > 500 as is_long
+            FROM post p 
+                JOIN user_profiles u ON p.id_user_create_post = u.id
+        JOIN subscribe s ON p.id_user_create_post = s.subscribed_to_id
+        WHERE s.subscriber_id = $1
+            ORDER BY date_create DESC
+            LIMIT $2 OFFSET $3`, userID, limit, offset)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post models.Post
+		var isLong bool
+
+		if err := rows.Scan(
+			&post.Id_post,
+			&post.Id_User,
+			&post.Theme,
+			&post.Content_post,
+			&post.Date_create,
+			&post.FullName,
+			&post.Photo,
+			&post.Login,
+			&isLong,
+		); err != nil {
+			return nil, err
+		}
+
+		post.IsLong = isLong
+		posts = append(posts, post)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return posts, nil
 }

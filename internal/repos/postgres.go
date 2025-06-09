@@ -13,7 +13,7 @@ import (
 var dbDriveName = "postgres"
 
 func NewBusinessDatabase(config *config.Config, env *models.Environment) *sqlx.DB {
-	conn := getConnectDatabase(env, config)
+	conn := GetConnectDatabase(env, config)
 	if conn == nil {
 		log.Fatal("failed to establish database connection")
 	}
@@ -21,7 +21,7 @@ func NewBusinessDatabase(config *config.Config, env *models.Environment) *sqlx.D
 	return db
 }
 
-func getConnectDatabase(env *models.Environment, config *config.Config) *sql.DB {
+func GetConnectDatabase(env *models.Environment, config *config.Config) *sql.DB {
 	connString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Host,
 		config.Port,

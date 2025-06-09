@@ -33,6 +33,7 @@ type Post interface {
 type Subscribe interface {
 	ToggleSub(userID int, targetID string) bool
 	CheckIfSubscribed(userID int, targetID string) (bool, error)
+	GetSubscribedPosts(userID, page, limit int) ([]models2.Post, error)
 }
 
 type Repository struct {

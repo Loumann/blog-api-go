@@ -16,6 +16,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 	router.GET("/users/:login", c.GetProfileFromLogin)
 	router.GET("/page", c.MyPage)
 	router.GET("/search", c.SearchPage)
+	router.GET("/subs", c.SubsPages)
 
 	router.GET("/users", c.GetProfile)
 	router.GET("/check-sub/:userId", c.CheckSubscribe)
@@ -30,6 +31,7 @@ func (c *Controller) InitRouters() *gin.Engine {
 
 	subscribe := router.Group("/subscribe")
 	{
+		subscribe.GET("/posts", c.GetPostsSubcribe)
 		subscribe.POST("/:userId", c.Subscribe)
 	}
 

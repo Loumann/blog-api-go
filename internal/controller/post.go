@@ -36,11 +36,10 @@ func (c Controller) GetPosts(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
-	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
-
+	pageInt, err := strconv.Atoi(page)
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit parameter"})

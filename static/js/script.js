@@ -249,7 +249,6 @@ async function savePost() {
     }
 }
 
-
 window.addEventListener('click', function(event) {
     const dropdownMenu = document.getElementById('dropdown-menu');
     const profile = document.getElementById('profile');

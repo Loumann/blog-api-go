@@ -20,6 +20,7 @@
     <div id="dropdown-menu" class="dropdown-menu">
         <a href="/feed">Новости</a>
         <a href="/search">Поиск</a>
+        <a href="/subs">Мои подписки</a>
         <a href="/  ">Выйти</a>
     </div>
     <button content="Создать пост" onclick="openModal()">Постнуть</button>
@@ -42,9 +43,6 @@
         </div>
     </div>
 
-
-
-
     <div class="modal-overlay" id="edit-modal">
         <div class="modal">
             <span class="close" onclick="closeModalEdit()">&times;</span>
@@ -60,11 +58,6 @@
             <button onclick="savePost()">Сохранить</button>
         </div>
     </div>
-
-
-
-
-
 
     <div id="posts-container"></div>
     <div id="loading">Загружаем посты...</div>

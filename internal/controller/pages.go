@@ -22,5 +22,8 @@ func (c Controller) MyPage(con *gin.Context) {
 }
 func (c Controller) SearchPage(con *gin.Context) {
 	con.HTML(http.StatusOK, "Search.html", nil)
+}
 
+func (c Controller) SubsPages(con *gin.Context) {
+	con.HTML(http.StatusOK, "Subscrubes.html", nil)
 }
